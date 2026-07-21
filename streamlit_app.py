@@ -618,7 +618,7 @@ if selected_key == "ai_copilot":
                         <strong>🤖 AI Copilot:</strong><br>{msg['content']}
                     </div>
                     """, unsafe_allow_html=True)
-        # حقل الإدخال
+       # ─── حقل الإدخال ───
         col_q, col_send = st.columns([5, 1])
 
         with col_q:
@@ -639,8 +639,8 @@ if selected_key == "ai_copilot":
                 st.session_state.chat_history = []
                 st.rerun()
 
+        # معالجة إرسال السؤال
         if send_btn and user_question and user_question.strip():
-
             st.session_state.chat_history.append({
                 "role": "user",
                 "content": user_question
@@ -652,7 +652,6 @@ if selected_key == "ai_copilot":
                     from core.ai_copilot import AIOperationsCopilot
 
                     kb = CopilotKnowledgeBase()
-
                     copilot = AIOperationsCopilot(
                         portfolio_df=st.session_state.ai_portfolio_df,
                         payments_df=st.session_state.ai_payments_df,
@@ -673,9 +672,10 @@ if selected_key == "ai_copilot":
             })
 
             st.session_state.ai_question = ""
-
             st.rerun()
+
     else:
+        # الكرت يظهر إذا لم يتم رفع ملف المحفظة في قسم AI Copilot
         st.markdown("""
         <div style="
             text-align:center;
@@ -694,6 +694,7 @@ if selected_key == "ai_copilot":
             </div>
         </div>
         """, unsafe_allow_html=True)
+
 # ════════════════════════════════════════════════════════════════════
 #  واجهة باقي الموديولات (الموديولات الأصلية كما هي)
 # ════════════════════════════════════════════════════════════════════
@@ -709,6 +710,7 @@ else:
                 type=["xlsx", "xls"],
                 key=f"{selected_key}_{fspec['key']}"
             )
+
     # ─── معطيات السحب والتدوير ───
     rotation_params = {}
     if selected_key == "rotation" and uploaded_files.get("portfolio"):
@@ -736,7 +738,8 @@ else:
                     else:
                         st.selectbox("2. اسم المحصل المطلوب سحب محفظته:", ["-- اختر المشرف أولاً --"], disabled=True)
                         selected_col = None
-                if selected_sup and selected_sup != "-- اختر Supervisor --" and selected_col and selected_col != "-- اختر المحصل --":
+
+                if selected_sup and selected_sup != "-- اختر المشرف --" and selected_col and selected_col != "-- اختر المحصل --":
                     pool = [c for c in mapping[selected_sup] if c != selected_col]
                     if len(pool) == 0:
                         st.error(f"⚠️ لا يوجد محصلون آخرون تحت إشراف '{selected_sup}'!")
@@ -747,8 +750,9 @@ else:
         finally:
             try:
                 os.unlink(tmp_scan_path)
-            except:
+            except Exception:
                 pass
+            
     # ─── واجهة سحب وتوزيع المحافظ ───
     balancing_params = {}
     source_ports: list = []
