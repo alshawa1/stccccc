@@ -498,12 +498,12 @@ with st.sidebar:
     """, unsafe_allow_html=True)
 
 # ════════════════════════════════════════════════════════════════════
-#  الرأس الرئيسي للصفحة
+#  الرأس الرئيسي للصفحة (حسب الموديول المختار)
 # ════════════════════════════════════════════════════════════════════
 module_info = MODULES[selected_key]
 
 # ════════════════════════════════════════════════════════════════════
-#  🤖 واجهة AI Operations Copilot
+#  🤖 واجهة AI Operations Copilot (الموديول 99)
 # ════════════════════════════════════════════════════════════════════
 if selected_key == "ai_copilot":
     # Header بطاقة عليا
@@ -582,7 +582,7 @@ if selected_key == "ai_copilot":
             except Exception:
                 pass
 
-    # ─── فلتر المشرفين ───
+    # ─── فلتر المشرفين (يظهر فقط إذا تم تحميل المحفظة) ───
     if st.session_state.ai_portfolio_df is not None:
         st.markdown("<div class='purple-divider'></div>", unsafe_allow_html=True)
         st.markdown("#### 👥 تحديد نطاق العمل (المشرفين)")
@@ -694,7 +694,7 @@ if selected_key == "ai_copilot":
         st.session_state.ai_question = ""
         st.rerun()
 
-    # إذا لم يتم رفع ملف المحفظة
+    # إذا لم يتم رفع ملف المحفظة (رسالة توجيهية)
     if st.session_state.ai_portfolio_df is None:
         st.markdown("""
         <div style="
@@ -716,7 +716,7 @@ if selected_key == "ai_copilot":
         """, unsafe_allow_html=True)
 
 # ════════════════════════════════════════════════════════════════════
-#  باقي الموديولات (الموديولات الأصلية)
+#  باقي الموديولات (جميع الموديولات عدا AI Copilot)
 # ════════════════════════════════════════════════════════════════════
 else:
     # Header
