@@ -23,184 +23,47 @@ st.set_page_config(
 )
 
 # ════════════════════════════════════════════════════════════════════
-#  CSS احترافي
+#  CSS احترافي - مختصر
 # ════════════════════════════════════════════════════════════════════
 st.markdown("""
-    <style>
-    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap');
-    html, body, [class*="css"], .stApp {
-        font-family: 'Cairo', 'Segoe UI', sans-serif !important;
-        direction: RTL;
-        text-align: right;
-        background-color: #0d0e1a !important;
-        color: #e2e8f0 !important;
-    }
-    .stApp {
-        background: radial-gradient(ellipse at top left, #1a0a2e 0%, #0d0e1a 60%) !important;
-    }
-    [data-testid="stSidebar"] {
-        background: linear-gradient(180deg, #130b2b 0%, #0d0e1a 100%) !important;
-        border-left: 1px solid rgba(79, 45, 127, 0.4) !important;
-    }
-    [data-testid="stSidebar"] * { direction: RTL; text-align: right; }
-    .stRadio > div { direction: RTL; }
-    .stRadio > div > label {
-        direction: RTL;
-        text-align: right !important;
-        font-size: 14px;
-        padding: 8px 12px;
-        border-radius: 8px;
-        transition: background 0.2s;
-    }
-    .stRadio > div > label:hover { background: rgba(79, 45, 127, 0.2) !important; }
-    [data-testid="metric-container"] {
-        background: rgba(79, 45, 127, 0.12) !important;
-        border: 1px solid rgba(79, 45, 127, 0.35) !important;
-        border-radius: 14px;
-        padding: 16px 20px;
-        box-shadow: 0 4px 20px rgba(79, 45, 127, 0.15);
-        transition: transform 0.2s, box-shadow 0.2s;
-    }
-    [data-testid="metric-container"]:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 30px rgba(79, 45, 127, 0.25);
-    }
-    [data-testid="stMetricValue"] { color: #c084fc !important; font-weight: 700; font-size: 22px; }
-    [data-testid="stMetricLabel"] { color: #a78bfa !important; font-size: 13px; }
-    .stButton > button {
-        background: linear-gradient(135deg, #4f2d7f 0%, #7c3aed 100%) !important;
-        color: white !important;
-        border: none !important;
-        border-radius: 10px;
-        font-weight: 700 !important;
-        font-size: 15px;
-        padding: 10px 24px;
-        transition: all 0.25s !important;
-        box-shadow: 0 4px 15px rgba(124, 58, 237, 0.35);
-    }
-    .stButton > button:hover {
-        transform: translateY(-2px) !important;
-        box-shadow: 0 8px 25px rgba(124, 58, 237, 0.5) !important;
-    }
-    .stDownloadButton > button {
-        background: linear-gradient(135deg, #065f46 0%, #059669 100%) !important;
-        color: white !important;
-        border: none !important;
-        border-radius: 10px;
-        font-weight: 700 !important;
-        font-size: 15px;
-        box-shadow: 0 4px 15px rgba(5, 150, 105, 0.35) !important;
-        transition: all 0.25s !important;
-    }
-    .stDownloadButton > button:hover {
-        transform: translateY(-2px) !important;
-        box-shadow: 0 8px 25px rgba(5, 150, 105, 0.5) !important;
-    }
-    .stTextInput input, .stSelectbox select, .stMultiSelect,
-    [data-testid="stTextInput"] input {
-        background: rgba(79, 45, 127, 0.1) !important;
-        border: 1px solid rgba(79, 45, 127, 0.4) !important;
-        border-radius: 10px !important;
-        color: #e2e8f0 !important;
-        direction: RTL !important;
-    }
-    .stTextInput input:focus, [data-testid="stTextInput"] input:focus {
-        border-color: #7c3aed !important;
-        box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.2) !important;
-    }
-    hr { border-color: rgba(79, 45, 127, 0.3) !important; }
-    .stSuccess { background: rgba(5, 150, 105, 0.1) !important; border: 1px solid rgba(5, 150, 105, 0.3) !important; border-radius: 10px; }
-    .stError { background: rgba(220, 38, 38, 0.1) !important; border: 1px solid rgba(220, 38, 38, 0.3) !important; border-radius: 10px; }
-    .stInfo { background: rgba(79, 45, 127, 0.12) !important; border: 1px solid rgba(79, 45, 127, 0.3) !important; border-radius: 10px; }
-    .stWarning { background: rgba(217, 119, 6, 0.1) !important; border: 1px solid rgba(217, 119, 6, 0.3) !important; border-radius: 10px; }
-    .chat-bubble-user {
-        background: rgba(79, 45, 127, 0.25);
-        border: 1px solid rgba(124, 58, 237, 0.4);
-        border-radius: 16px 16px 4px 16px;
-        padding: 12px 16px;
-        margin: 8px 0;
-        font-size: 14px;
-        direction: RTL;
-    }
-    .chat-bubble-ai {
-        background: rgba(15, 23, 42, 0.7);
-        border: 1px solid rgba(79, 45, 127, 0.3);
-        border-radius: 16px 16px 16px 4px;
-        padding: 14px 18px;
-        margin: 8px 0;
-        font-size: 14px;
-        direction: RTL;
-        line-height: 1.8;
-    }
-    .ai-header-card {
-        background: linear-gradient(135deg, rgba(79,45,127,0.3) 0%, rgba(124,58,237,0.15) 100%);
-        border: 1px solid rgba(124, 58, 237, 0.4);
-        border-radius: 16px;
-        padding: 20px 24px;
-        margin-bottom: 16px;
-        direction: RTL;
-    }
-    .login-card {
-        background: linear-gradient(135deg, rgba(79,45,127,0.25) 0%, rgba(30,10,60,0.8) 100%);
-        border: 1px solid rgba(124, 58, 237, 0.5);
-        border-radius: 24px;
-        padding: 48px 40px;
-        max-width: 480px;
-        margin: 60px auto;
-        box-shadow: 0 20px 60px rgba(79, 45, 127, 0.4);
-        direction: RTL;
-        text-align: center;
-    }
-    .stc-logo-text {
-        font-size: 52px;
-        font-weight: 900;
-        background: linear-gradient(135deg, #a855f7, #7c3aed, #4f2d7f);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        letter-spacing: 2px;
-        line-height: 1;
-    }
-    .stc-tagline { color: #a78bfa; font-size: 15px; margin-top: 4px; }
-    .purple-divider {
-        height: 3px;
-        background: linear-gradient(90deg, transparent, #7c3aed, #a855f7, #7c3aed, transparent);
-        border-radius: 3px;
-        margin: 12px 0;
-    }
-    @keyframes shimmer {
-        0% { background-position: -200% center; }
-        100% { background-position: 200% center; }
-    }
-    .loading-text {
-        background: linear-gradient(90deg, #4f2d7f, #a855f7, #4f2d7f);
-        background-size: 200% auto;
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        animation: shimmer 2s linear infinite;
-    }
-    [data-testid="stDataFrame"] {
-        border-radius: 12px;
-        overflow: hidden;
-        border: 1px solid rgba(79, 45, 127, 0.3);
-    }
-    [data-testid="stFileUploader"] {
-        background: rgba(79, 45, 127, 0.08) !important;
-        border: 2px dashed rgba(124, 58, 237, 0.4) !important;
-        border-radius: 14px !important;
-        padding: 12px;
-        transition: border-color 0.2s, background 0.2s;
-    }
-    [data-testid="stFileUploader"]:hover {
-        border-color: rgba(124, 58, 237, 0.7) !important;
-        background: rgba(79, 45, 127, 0.14) !important;
-    }
-    .stMarkdown, .stSelectbox, .stFileUploader, .stButton,
-    .stMultiSelect, .stDateInput, .stTextArea, p, label {
-        direction: RTL;
-        text-align: right !important;
-    }
-    </style>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap');
+html, body, [class*="css"], .stApp { font-family: 'Cairo', 'Segoe UI', sans-serif !important; direction: RTL; text-align: right; background-color: #0d0e1a !important; color: #e2e8f0 !important; }
+.stApp { background: radial-gradient(ellipse at top left, #1a0a2e 0%, #0d0e1a 60%) !important; }
+[data-testid="stSidebar"] { background: linear-gradient(180deg, #130b2b 0%, #0d0e1a 100%) !important; border-left: 1px solid rgba(79, 45, 127, 0.4) !important; }
+[data-testid="stSidebar"] * { direction: RTL; text-align: right; }
+.stRadio > div { direction: RTL; }
+.stRadio > div > label { direction: RTL; text-align: right !important; font-size: 14px; padding: 8px 12px; border-radius: 8px; transition: background 0.2s; }
+.stRadio > div > label:hover { background: rgba(79, 45, 127, 0.2) !important; }
+[data-testid="metric-container"] { background: rgba(79, 45, 127, 0.12) !important; border: 1px solid rgba(79, 45, 127, 0.35) !important; border-radius: 14px; padding: 16px 20px; box-shadow: 0 4px 20px rgba(79, 45, 127, 0.15); transition: transform 0.2s, box-shadow 0.2s; }
+[data-testid="metric-container"]:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(79, 45, 127, 0.25); }
+[data-testid="stMetricValue"] { color: #c084fc !important; font-weight: 700; font-size: 22px; }
+[data-testid="stMetricLabel"] { color: #a78bfa !important; font-size: 13px; }
+.stButton > button { background: linear-gradient(135deg, #4f2d7f 0%, #7c3aed 100%) !important; color: white !important; border: none !important; border-radius: 10px; font-weight: 700 !important; font-size: 15px; padding: 10px 24px; transition: all 0.25s !important; box-shadow: 0 4px 15px rgba(124, 58, 237, 0.35); }
+.stButton > button:hover { transform: translateY(-2px) !important; box-shadow: 0 8px 25px rgba(124, 58, 237, 0.5) !important; }
+.stDownloadButton > button { background: linear-gradient(135deg, #065f46 0%, #059669 100%) !important; color: white !important; border: none !important; border-radius: 10px; font-weight: 700 !important; font-size: 15px; box-shadow: 0 4px 15px rgba(5, 150, 105, 0.35) !important; transition: all 0.25s !important; }
+.stDownloadButton > button:hover { transform: translateY(-2px) !important; box-shadow: 0 8px 25px rgba(5, 150, 105, 0.5) !important; }
+.stTextInput input, .stSelectbox select, .stMultiSelect, [data-testid="stTextInput"] input { background: rgba(79, 45, 127, 0.1) !important; border: 1px solid rgba(79, 45, 127, 0.4) !important; border-radius: 10px !important; color: #e2e8f0 !important; direction: RTL !important; }
+.stTextInput input:focus, [data-testid="stTextInput"] input:focus { border-color: #7c3aed !important; box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.2) !important; }
+hr { border-color: rgba(79, 45, 127, 0.3) !important; }
+.stSuccess { background: rgba(5, 150, 105, 0.1) !important; border: 1px solid rgba(5, 150, 105, 0.3) !important; border-radius: 10px; }
+.stError { background: rgba(220, 38, 38, 0.1) !important; border: 1px solid rgba(220, 38, 38, 0.3) !important; border-radius: 10px; }
+.stInfo { background: rgba(79, 45, 127, 0.12) !important; border: 1px solid rgba(79, 45, 127, 0.3) !important; border-radius: 10px; }
+.stWarning { background: rgba(217, 119, 6, 0.1) !important; border: 1px solid rgba(217, 119, 6, 0.3) !important; border-radius: 10px; }
+.chat-bubble-user { background: rgba(79, 45, 127, 0.25); border: 1px solid rgba(124, 58, 237, 0.4); border-radius: 16px 16px 4px 16px; padding: 12px 16px; margin: 8px 0; font-size: 14px; direction: RTL; }
+.chat-bubble-ai { background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(79, 45, 127, 0.3); border-radius: 16px 16px 16px 4px; padding: 14px 18px; margin: 8px 0; font-size: 14px; direction: RTL; line-height: 1.8; }
+.ai-header-card { background: linear-gradient(135deg, rgba(79,45,127,0.3) 0%, rgba(124,58,237,0.15) 100%); border: 1px solid rgba(124, 58, 237, 0.4); border-radius: 16px; padding: 20px 24px; margin-bottom: 16px; direction: RTL; }
+.login-card { background: linear-gradient(135deg, rgba(79,45,127,0.25) 0%, rgba(30,10,60,0.8) 100%); border: 1px solid rgba(124, 58, 237, 0.5); border-radius: 24px; padding: 48px 40px; max-width: 480px; margin: 60px auto; box-shadow: 0 20px 60px rgba(79, 45, 127, 0.4); direction: RTL; text-align: center; }
+.stc-logo-text { font-size: 52px; font-weight: 900; background: linear-gradient(135deg, #a855f7, #7c3aed, #4f2d7f); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; letter-spacing: 2px; line-height: 1; }
+.stc-tagline { color: #a78bfa; font-size: 15px; margin-top: 4px; }
+.purple-divider { height: 3px; background: linear-gradient(90deg, transparent, #7c3aed, #a855f7, #7c3aed, transparent); border-radius: 3px; margin: 12px 0; }
+@keyframes shimmer { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
+.loading-text { background: linear-gradient(90deg, #4f2d7f, #a855f7, #4f2d7f); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: shimmer 2s linear infinite; }
+[data-testid="stDataFrame"] { border-radius: 12px; overflow: hidden; border: 1px solid rgba(79, 45, 127, 0.3); }
+[data-testid="stFileUploader"] { background: rgba(79, 45, 127, 0.08) !important; border: 2px dashed rgba(124, 58, 237, 0.4) !important; border-radius: 14px !important; padding: 12px; transition: border-color 0.2s, background 0.2s; }
+[data-testid="stFileUploader"]:hover { border-color: rgba(124, 58, 237, 0.7) !important; background: rgba(79, 45, 127, 0.14) !important; }
+.stMarkdown, .stSelectbox, .stFileUploader, .stButton, .stMultiSelect, .stDateInput, .stTextArea, p, label { direction: RTL; text-align: right !important; }
+</style>
 """, unsafe_allow_html=True)
 
 # ════════════════════════════════════════════════════════════════════
@@ -222,13 +85,7 @@ if not st.session_state.authenticated:
             </p>
         </div>
         """, unsafe_allow_html=True)
-        pwd_input = st.text_input(
-            "كلمة المرور",
-            type="password",
-            placeholder="أدخل كلمة المرور هنا...",
-            key="pwd_input",
-            label_visibility="collapsed"
-        )
+        pwd_input = st.text_input("كلمة المرور", type="password", placeholder="أدخل كلمة المرور هنا...", key="pwd_input", label_visibility="collapsed")
         login_btn = st.button("🔓 دخول", use_container_width=True)
         if login_btn or (pwd_input and pwd_input == "333"):
             if pwd_input == "333":
@@ -255,33 +112,25 @@ MODULES = {
         "name": "🔄 السحب والتدوير",
         "desc": "سحب جميع عملاء محصل معين وإعادة توزيعهم بالتساوي على باقي المحصليين التابعين لنفس المشرف، مع الحفاظ على جميع مديونيات العميل الواحد لدى نفس المحصل الجديد.",
         "id": 6,
-        "files": [
-            {"key": "portfolio", "label": "ملف المحفظة الأساسية (.xlsx)", "required": True}
-        ]
+        "files": [{"key": "portfolio", "label": "ملف المحفظة الأساسية (.xlsx)", "required": True}]
     },
     "contact": {
         "name": "📞 التوصل وعدم التوصل",
         "desc": "تحليل وتصنيف العملاء بناءً على حالات التواصل الرئيسية والفرعية والمتابعة للوصول إلى التصنيف النهائي وتتبع محاولات الاتصال.",
         "id": 2,
-        "files": [
-            {"key": "portfolio", "label": "ملف المحفظة الأساسية (.xlsx)", "required": True}
-        ]
+        "files": [{"key": "portfolio", "label": "ملف المحفظة الأساسية (.xlsx)", "required": True}]
     },
     "targets": {
         "name": "🎯 العملاء المستهدفة",
         "desc": "تحديد العملاء ذوي الأولوية المرتفعة بناءً على متبقي السداد الموثق ونسب التغطية والتوجيهات المعتمدة.",
         "id": 7,
-        "files": [
-            {"key": "portfolio", "label": "ملف المحفظة الأساسية (.xlsx)", "required": True}
-        ]
+        "files": [{"key": "portfolio", "label": "ملف المحفظة الأساسية (.xlsx)", "required": True}]
     },
     "neglect": {
         "name": "⏰ الإهمال والمتابعات",
         "desc": "تحليل وتصنيف حالات الإهمال وتحديد العملاء غير المتابعين بناءً على أيام المتابعة وآخر محاولة تواصل.",
         "id": 3,
-        "files": [
-            {"key": "portfolio", "label": "ملف المحفظة الأساسية (.xlsx)", "required": True}
-        ]
+        "files": [{"key": "portfolio", "label": "ملف المحفظة الأساسية (.xlsx)", "required": True}]
     },
     "errors": {
         "name": "🔴 أخطاء النظام والوعود",
@@ -296,9 +145,7 @@ MODULES = {
         "name": "⚖️ سحب وتوزيع المحافظ",
         "desc": "إعادة توزيع العملاء من محافظ مصدر على محافظ هدف بخوارزمية ذكية تحقق توازناً مزدوجاً في عدد العملاء وإجمالي متبقي السداد بين جميع المحصلين المستهدفين.",
         "id": 8,
-        "files": [
-            {"key": "portfolio", "label": "ملف المحفظة الأساسية (.xlsx)", "required": True}
-        ]
+        "files": [{"key": "portfolio", "label": "ملف المحفظة الأساسية (.xlsx)", "required": True}]
     },
     "operations": {
         "name": "📊 مركز تقارير العمليات",
@@ -334,12 +181,8 @@ def read_excel_calamine(file_path: str) -> pl.DataFrame:
             seen[h_str] = 0
         headers.append(h_str)
     records = data[1:]
-    str_records = [
-        [str(cell) if cell is not None else "" for cell in row]
-        for row in records
-    ]
+    str_records = [[str(cell) if cell is not None else "" for cell in row] for row in records]
     return pl.DataFrame(str_records, schema=headers, orient="row")
-
 
 @st.cache_data
 def scan_portfolio_for_balancing(file_path):
@@ -353,7 +196,6 @@ def scan_portfolio_for_balancing(file_path):
         st.error(f"حدث خطأ أثناء فحص الملف: {e}")
         return [], {}
 
-
 @st.cache_data
 def scan_portfolio_for_operations(file_path):
     try:
@@ -363,7 +205,6 @@ def scan_portfolio_for_operations(file_path):
     except Exception as e:
         st.error(f"حدث خطأ أثناء فحص ملف العمليات: {e}")
         return {}
-
 
 @st.cache_data
 def scan_portfolio_for_rotation(file_path):
@@ -379,11 +220,9 @@ def scan_portfolio_for_rotation(file_path):
         st.error(f"حدث خطأ أثناء فحص الملف: {e}")
         return None
 
-
 @st.cache_data
 def load_portfolio_df(file_path):
     return read_excel_calamine(file_path)
-
 
 def detect_supervisor_column(df: pl.DataFrame) -> str | None:
     candidates = ["اسم المشرف", "المشرف", "مشرف", "Supervisor", "supervisor"]
@@ -433,20 +272,17 @@ with st.sidebar:
 module_info = MODULES[selected_key]
 
 # ════════════════════════════════════════════════════════════════════
-#  🤖 واجهة AI Copilot (الموديول 99)
+#  بداية التفرع الرئيسي (if/else)
 # ════════════════════════════════════════════════════════════════════
 if selected_key == "ai_copilot":
+    # ─── كود AI Copilot كاملاً هنا ───
     st.markdown("""
     <div class="ai-header-card">
         <div style="display:flex; align-items:center; gap:16px; flex-direction:row-reverse;">
             <div style="font-size:48px; line-height:1;">🤖</div>
             <div>
-                <div style="font-size:24px; font-weight:800; color:#e2e8f0;">
-                    AI Operations Copilot
-                </div>
-                <div style="color:#a78bfa; font-size:14px; margin-top:4px;">
-                    مساعد الذكاء الاصطناعي لقسم العمليات — يفهم بياناتك ويجيب عن أي سؤال
-                </div>
+                <div style="font-size:24px; font-weight:800; color:#e2e8f0;">AI Operations Copilot</div>
+                <div style="color:#a78bfa; font-size:14px; margin-top:4px;">مساعد الذكاء الاصطناعي لقسم العمليات — يفهم بياناتك ويجيب عن أي سؤال</div>
                 <div class="purple-divider" style="margin:10px 0 0 0; width:200px;"></div>
             </div>
         </div>
@@ -454,16 +290,14 @@ if selected_key == "ai_copilot":
     """, unsafe_allow_html=True)
 
     # تهيئة session state
-    if "chat_history" not in st.session_state:
-        st.session_state.chat_history = []
-    if "ai_portfolio_df" not in st.session_state:
-        st.session_state.ai_portfolio_df = None
-    if "ai_payments_df" not in st.session_state:
-        st.session_state.ai_payments_df = None
-    if "ai_supervisors" not in st.session_state:
-        st.session_state.ai_supervisors = []
-    if "ai_selected_sups" not in st.session_state:
-        st.session_state.ai_selected_sups = []
+    for key in ["chat_history", "ai_portfolio_df", "ai_payments_df", "ai_supervisors", "ai_selected_sups"]:
+        if key not in st.session_state:
+            if key == "chat_history":
+                st.session_state[key] = []
+            elif key in ["ai_portfolio_df", "ai_payments_df"]:
+                st.session_state[key] = None
+            else:
+                st.session_state[key] = []
 
     # رفع الملفات
     st.markdown("#### 📂 رفع الملفات")
@@ -511,7 +345,7 @@ if selected_key == "ai_copilot":
             except Exception:
                 pass
 
-    # فلتر المشرفين (يظهر فقط إذا كانت المحفظة موجودة)
+    # فلتر المشرفين
     if st.session_state.ai_portfolio_df is not None:
         st.markdown("<div class='purple-divider'></div>", unsafe_allow_html=True)
         st.markdown("#### 👥 تحديد نطاق العمل (المشرفين)")
@@ -533,7 +367,7 @@ if selected_key == "ai_copilot":
         else:
             st.warning("⚠️ لم يتم اكتشاف عمود المشرفين تلقائياً. سيعمل الـ AI على كامل المحفظة.")
 
-    # واجهة الدردشة
+    # الدردشة
     st.markdown("<div class='purple-divider'></div>", unsafe_allow_html=True)
     st.markdown("#### 🧠 تحدث مع AI Operations Copilot")
 
@@ -566,15 +400,9 @@ if selected_key == "ai_copilot":
                 </div>
                 """, unsafe_allow_html=True)
 
-    # حقل الإدخال
     col_q, col_send = st.columns([5, 1])
     with col_q:
-        user_question = st.text_input(
-            "اسأل الـ AI...",
-            placeholder="مثال: كم نسبة التغطية اليوم؟",
-            key="ai_question",
-            label_visibility="collapsed"
-        )
+        user_question = st.text_input("اسأل الـ AI...", placeholder="مثال: كم نسبة التغطية اليوم؟", key="ai_question", label_visibility="collapsed")
     with col_send:
         send_btn = st.button("✉️ إرسال", use_container_width=True)
 
@@ -585,10 +413,7 @@ if selected_key == "ai_copilot":
             st.rerun()
 
     if send_btn and user_question and user_question.strip():
-        st.session_state.chat_history.append({
-            "role": "user",
-            "content": user_question
-        })
+        st.session_state.chat_history.append({"role": "user", "content": user_question})
         with st.spinner("🤖 AI يحلل بياناتك..."):
             try:
                 from core.knowledge_base import CopilotKnowledgeBase
@@ -605,36 +430,21 @@ if selected_key == "ai_copilot":
                 )
             except Exception as e:
                 answer = f"⚠️ حدث خطأ أثناء تحليل البيانات: {e}"
-        st.session_state.chat_history.append({
-            "role": "ai",
-            "content": answer
-        })
+        st.session_state.chat_history.append({"role": "ai", "content": answer})
         st.session_state.ai_question = ""
         st.rerun()
 
-    # إذا لم يتم رفع ملف المحفظة
     if st.session_state.ai_portfolio_df is None:
         st.markdown("""
-        <div style="
-            text-align:center;
-            padding: 60px 20px;
-            color: #64748b;
-            border: 2px dashed rgba(79,45,127,0.3);
-            border-radius: 20px;
-            margin-top: 24px;
-        ">
+        <div style="text-align:center; padding: 60px 20px; color: #64748b; border: 2px dashed rgba(79,45,127,0.3); border-radius: 20px; margin-top: 24px;">
             <div style="font-size:64px; margin-bottom:16px;">🤖</div>
-            <div style="font-size:18px; color:#a78bfa; font-weight:600;">
-                ارفع ملف المحفظة للبدء
-            </div>
-            <div style="font-size:14px; color:#64748b; margin-top:8px;">
-                سيقوم AI Operations Copilot بتحليل بياناتك فور رفع الملف
-            </div>
+            <div style="font-size:18px; color:#a78bfa; font-weight:600;">ارفع ملف المحفظة للبدء</div>
+            <div style="font-size:14px; color:#64748b; margin-top:8px;">سيقوم AI Operations Copilot بتحليل بياناتك فور رفع الملف</div>
         </div>
         """, unsafe_allow_html=True)
 
 # ════════════════════════════════════════════════════════════════════
-#  باقي الموديولات (جميع الموديولات عدا AI Copilot)
+#  باقي الموديولات (أي موديول غير AI Copilot)
 # ════════════════════════════════════════════════════════════════════
 else:
     st.markdown(f"""
@@ -645,7 +455,7 @@ else:
     """, unsafe_allow_html=True)
     st.info(module_info["desc"])
 
-    # ─── رفع الملفات ───
+    # رفع الملفات
     st.markdown("#### 📂 رفع الملفات المطلوبة")
     uploaded_files = {}
     cols_upload = st.columns(len(module_info["files"]))
@@ -657,7 +467,7 @@ else:
                 key=f"{selected_key}_{fspec['key']}"
             )
 
-    # ─── معطيات خاصة بكل موديول ───
+    # معطيات خاصة بكل موديول
     rotation_params = {}
     balancing_params = {}
     ops_params = {}
@@ -749,10 +559,7 @@ else:
                     else:
                         st.success(f"✅ سيتم سحب وتوزيع عملاء **{' | '.join(source_ports)}** بالتساوي داخل كل محفظة.")
                     st.markdown("##### ⚙️ إعدادات التوزيع المتقدمة")
-                    min_chunk = st.number_input(
-                        "الحد الأدنى لعدد العملاء:",
-                        min_value=50, max_value=1000, value=150, step=10
-                    )
+                    min_chunk = st.number_input("الحد الأدنى لعدد العملاء:", min_value=50, max_value=1000, value=150, step=10)
                     balancing_params["source"] = source_ports
                     balancing_params["target"] = target_ports if target_ports else None
                     balancing_params["chunk"] = min_chunk
@@ -832,7 +639,7 @@ else:
             except Exception:
                 pass
 
-    # ─── التحقق من الجاهزية ───
+    # التحقق من الجاهزية
     ready_to_run = True
     for fspec in module_info["files"]:
         if fspec["required"] and not uploaded_files.get(fspec["key"]):
@@ -844,7 +651,7 @@ else:
     if selected_key == "operations" and not ops_params:
         ready_to_run = False
 
-    # ─── زر التشغيل ───
+    # زر التشغيل
     st.markdown("<div class='purple-divider'></div>", unsafe_allow_html=True)
     if st.button("🚀 تشغيل التحليل والمعالجة", disabled=not ready_to_run, use_container_width=True):
         temp_files = []
@@ -1010,3 +817,7 @@ else:
                         os.unlink(p)
                 except Exception:
                     pass
+
+# ════════════════════════════════════════════════════════════════════
+#  نهاية الملف - لا توجد أي أوامر بعد هذا السطر
+# ════════════════════════════════════════════════════════════════════
