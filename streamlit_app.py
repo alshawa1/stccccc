@@ -23,12 +23,11 @@ st.set_page_config(
 )
 
 # ════════════════════════════════════════════════════════════════════
-#  CSS احترافي - هوية STC بالألوان الأرجوانية والتصميم الداكن
+#  CSS احترافي
 # ════════════════════════════════════════════════════════════════════
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap');
-    /* ─── القواعد العامة ─── */
     html, body, [class*="css"], .stApp {
         font-family: 'Cairo', 'Segoe UI', sans-serif !important;
         direction: RTL;
@@ -36,23 +35,15 @@ st.markdown("""
         background-color: #0d0e1a !important;
         color: #e2e8f0 !important;
     }
-    /* ─── خلفية متدرجة للتطبيق ─── */
     .stApp {
         background: radial-gradient(ellipse at top left, #1a0a2e 0%, #0d0e1a 60%) !important;
     }
-    /* ─── الشريط الجانبي ─── */
     [data-testid="stSidebar"] {
         background: linear-gradient(180deg, #130b2b 0%, #0d0e1a 100%) !important;
         border-left: 1px solid rgba(79, 45, 127, 0.4) !important;
     }
-    [data-testid="stSidebar"] * {
-        direction: RTL;
-        text-align: right;
-    }
-    /* ─── شريط التنقل في Sidebar ─── */
-    .stRadio > div {
-        direction: RTL;
-    }
+    [data-testid="stSidebar"] * { direction: RTL; text-align: right; }
+    .stRadio > div { direction: RTL; }
     .stRadio > div > label {
         direction: RTL;
         text-align: right !important;
@@ -61,10 +52,7 @@ st.markdown("""
         border-radius: 8px;
         transition: background 0.2s;
     }
-    .stRadio > div > label:hover {
-        background: rgba(79, 45, 127, 0.2) !important;
-    }
-    /* ─── الكروت والمناطق ─── */
+    .stRadio > div > label:hover { background: rgba(79, 45, 127, 0.2) !important; }
     [data-testid="metric-container"] {
         background: rgba(79, 45, 127, 0.12) !important;
         border: 1px solid rgba(79, 45, 127, 0.35) !important;
@@ -77,16 +65,8 @@ st.markdown("""
         transform: translateY(-2px);
         box-shadow: 0 8px 30px rgba(79, 45, 127, 0.25);
     }
-    [data-testid="stMetricValue"] {
-        color: #c084fc !important;
-        font-weight: 700;
-        font-size: 22px;
-    }
-    [data-testid="stMetricLabel"] {
-        color: #a78bfa !important;
-        font-size: 13px;
-    }
-    /* ─── أزرار ─── */
+    [data-testid="stMetricValue"] { color: #c084fc !important; font-weight: 700; font-size: 22px; }
+    [data-testid="stMetricLabel"] { color: #a78bfa !important; font-size: 13px; }
     .stButton > button {
         background: linear-gradient(135deg, #4f2d7f 0%, #7c3aed 100%) !important;
         color: white !important;
@@ -102,10 +82,6 @@ st.markdown("""
         transform: translateY(-2px) !important;
         box-shadow: 0 8px 25px rgba(124, 58, 237, 0.5) !important;
     }
-    .stButton > button:active {
-        transform: translateY(0px) !important;
-    }
-    /* ─── زر التحميل ─── */
     .stDownloadButton > button {
         background: linear-gradient(135deg, #065f46 0%, #059669 100%) !important;
         color: white !important;
@@ -120,7 +96,6 @@ st.markdown("""
         transform: translateY(-2px) !important;
         box-shadow: 0 8px 25px rgba(5, 150, 105, 0.5) !important;
     }
-    /* ─── حقل الإدخال والقوائم ─── */
     .stTextInput input, .stSelectbox select, .stMultiSelect,
     [data-testid="stTextInput"] input {
         background: rgba(79, 45, 127, 0.1) !important;
@@ -133,32 +108,11 @@ st.markdown("""
         border-color: #7c3aed !important;
         box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.2) !important;
     }
-    /* ─── الخطوط الفاصلة ─── */
-    hr {
-        border-color: rgba(79, 45, 127, 0.3) !important;
-    }
-    /* ─── رسائل النجاح والخطأ ─── */
-    .stSuccess {
-        background: rgba(5, 150, 105, 0.1) !important;
-        border: 1px solid rgba(5, 150, 105, 0.3) !important;
-        border-radius: 10px;
-    }
-    .stError {
-        background: rgba(220, 38, 38, 0.1) !important;
-        border: 1px solid rgba(220, 38, 38, 0.3) !important;
-        border-radius: 10px;
-    }
-    .stInfo {
-        background: rgba(79, 45, 127, 0.12) !important;
-        border: 1px solid rgba(79, 45, 127, 0.3) !important;
-        border-radius: 10px;
-    }
-    .stWarning {
-        background: rgba(217, 119, 6, 0.1) !important;
-        border: 1px solid rgba(217, 119, 6, 0.3) !important;
-        border-radius: 10px;
-    }
-    /* ─── حاوية الدردشة مع الـ AI ─── */
+    hr { border-color: rgba(79, 45, 127, 0.3) !important; }
+    .stSuccess { background: rgba(5, 150, 105, 0.1) !important; border: 1px solid rgba(5, 150, 105, 0.3) !important; border-radius: 10px; }
+    .stError { background: rgba(220, 38, 38, 0.1) !important; border: 1px solid rgba(220, 38, 38, 0.3) !important; border-radius: 10px; }
+    .stInfo { background: rgba(79, 45, 127, 0.12) !important; border: 1px solid rgba(79, 45, 127, 0.3) !important; border-radius: 10px; }
+    .stWarning { background: rgba(217, 119, 6, 0.1) !important; border: 1px solid rgba(217, 119, 6, 0.3) !important; border-radius: 10px; }
     .chat-bubble-user {
         background: rgba(79, 45, 127, 0.25);
         border: 1px solid rgba(124, 58, 237, 0.4);
@@ -178,14 +132,6 @@ st.markdown("""
         direction: RTL;
         line-height: 1.8;
     }
-    .chat-avatar-ai {
-        width: 28px; height: 28px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, #4f2d7f, #7c3aed);
-        display: inline-flex; align-items: center; justify-content: center;
-        font-size: 12px; margin-left: 8px;
-    }
-    /* ─── عنوان بطاقة الـ AI ─── */
     .ai-header-card {
         background: linear-gradient(135deg, rgba(79,45,127,0.3) 0%, rgba(124,58,237,0.15) 100%);
         border: 1px solid rgba(124, 58, 237, 0.4);
@@ -194,7 +140,6 @@ st.markdown("""
         margin-bottom: 16px;
         direction: RTL;
     }
-    /* ─── شاشة كلمة المرور ─── */
     .login-card {
         background: linear-gradient(135deg, rgba(79,45,127,0.25) 0%, rgba(30,10,60,0.8) 100%);
         border: 1px solid rgba(124, 58, 237, 0.5);
@@ -206,7 +151,6 @@ st.markdown("""
         direction: RTL;
         text-align: center;
     }
-    /* ─── عنوان STC ─── */
     .stc-logo-text {
         font-size: 52px;
         font-weight: 900;
@@ -217,19 +161,13 @@ st.markdown("""
         letter-spacing: 2px;
         line-height: 1;
     }
-    .stc-tagline {
-        color: #a78bfa;
-        font-size: 15px;
-        margin-top: 4px;
-    }
-    /* ─── شريط الفصل الأرجواني ─── */
+    .stc-tagline { color: #a78bfa; font-size: 15px; margin-top: 4px; }
     .purple-divider {
         height: 3px;
         background: linear-gradient(90deg, transparent, #7c3aed, #a855f7, #7c3aed, transparent);
         border-radius: 3px;
         margin: 12px 0;
     }
-    /* ─── Spinner Shimmer ─── */
     @keyframes shimmer {
         0% { background-position: -200% center; }
         100% { background-position: 200% center; }
@@ -241,13 +179,11 @@ st.markdown("""
         -webkit-text-fill-color: transparent;
         animation: shimmer 2s linear infinite;
     }
-    /* ─── DataFrames ─── */
     [data-testid="stDataFrame"] {
         border-radius: 12px;
         overflow: hidden;
         border: 1px solid rgba(79, 45, 127, 0.3);
     }
-    /* ─── File Uploader ─── */
     [data-testid="stFileUploader"] {
         background: rgba(79, 45, 127, 0.08) !important;
         border: 2px dashed rgba(124, 58, 237, 0.4) !important;
@@ -259,7 +195,6 @@ st.markdown("""
         border-color: rgba(124, 58, 237, 0.7) !important;
         background: rgba(79, 45, 127, 0.14) !important;
     }
-    /* ─── RTL كامل ─── */
     .stMarkdown, .stSelectbox, .stFileUploader, .stButton,
     .stMultiSelect, .stDateInput, .stTextArea, p, label {
         direction: RTL;
@@ -447,27 +382,23 @@ def scan_portfolio_for_rotation(file_path):
 
 @st.cache_data
 def load_portfolio_df(file_path):
-    """تحميل إطار البيانات من ملف المحفظة"""
     return read_excel_calamine(file_path)
 
 
 def detect_supervisor_column(df: pl.DataFrame) -> str | None:
-    """اكتشاف عمود المشرف تلقائياً"""
     candidates = ["اسم المشرف", "المشرف", "مشرف", "Supervisor", "supervisor"]
     for c in candidates:
         if c in df.columns:
             return c
-    # fuzzy fallback
     for col in df.columns:
         if "مشرف" in col or "supervisor" in col.lower():
             return col
     return None
 
 # ════════════════════════════════════════════════════════════════════
-#  الشريط الجانبي - STC Header + Navigation
+#  الشريط الجانبي
 # ════════════════════════════════════════════════════════════════════
 with st.sidebar:
-    # شعار STC
     st.markdown("""
     <div style="text-align:center; padding: 20px 0 10px 0;">
         <div class="stc-logo-text">STC</div>
@@ -483,7 +414,6 @@ with st.sidebar:
         label_visibility="collapsed"
     )
     st.markdown("<div class='purple-divider'></div>", unsafe_allow_html=True)
-    # زر تسجيل الخروج
     if st.button("🔒 تسجيل الخروج", use_container_width=True):
         st.session_state.authenticated = False
         st.session_state.pop("ai_portfolio_df", None)
@@ -498,15 +428,14 @@ with st.sidebar:
     """, unsafe_allow_html=True)
 
 # ════════════════════════════════════════════════════════════════════
-#  الرأس الرئيسي للصفحة (حسب الموديول المختار)
+#  تحديد الموديول الحالي
 # ════════════════════════════════════════════════════════════════════
 module_info = MODULES[selected_key]
 
 # ════════════════════════════════════════════════════════════════════
-#  🤖 واجهة AI Operations Copilot (الموديول 99)
+#  🤖 واجهة AI Copilot (الموديول 99)
 # ════════════════════════════════════════════════════════════════════
 if selected_key == "ai_copilot":
-    # Header بطاقة عليا
     st.markdown("""
     <div class="ai-header-card">
         <div style="display:flex; align-items:center; gap:16px; flex-direction:row-reverse;">
@@ -524,7 +453,7 @@ if selected_key == "ai_copilot":
     </div>
     """, unsafe_allow_html=True)
 
-    # تهيئة الحالة
+    # تهيئة session state
     if "chat_history" not in st.session_state:
         st.session_state.chat_history = []
     if "ai_portfolio_df" not in st.session_state:
@@ -536,7 +465,7 @@ if selected_key == "ai_copilot":
     if "ai_selected_sups" not in st.session_state:
         st.session_state.ai_selected_sups = []
 
-    # ─── قسم رفع الملفات ───
+    # رفع الملفات
     st.markdown("#### 📂 رفع الملفات")
     col_p, col_pay = st.columns(2)
     with col_p:
@@ -582,7 +511,7 @@ if selected_key == "ai_copilot":
             except Exception:
                 pass
 
-    # ─── فلتر المشرفين (يظهر فقط إذا تم تحميل المحفظة) ───
+    # فلتر المشرفين (يظهر فقط إذا كانت المحفظة موجودة)
     if st.session_state.ai_portfolio_df is not None:
         st.markdown("<div class='purple-divider'></div>", unsafe_allow_html=True)
         st.markdown("#### 👥 تحديد نطاق العمل (المشرفين)")
@@ -604,11 +533,10 @@ if selected_key == "ai_copilot":
         else:
             st.warning("⚠️ لم يتم اكتشاف عمود المشرفين تلقائياً. سيعمل الـ AI على كامل المحفظة.")
 
-    # ─── واجهة الدردشة ───
+    # واجهة الدردشة
     st.markdown("<div class='purple-divider'></div>", unsafe_allow_html=True)
     st.markdown("#### 🧠 تحدث مع AI Operations Copilot")
 
-    # عرض رسائل المحادثة
     chat_container = st.container()
     with chat_container:
         if not st.session_state.chat_history:
@@ -638,9 +566,8 @@ if selected_key == "ai_copilot":
                 </div>
                 """, unsafe_allow_html=True)
 
-    # ─── حقل الإدخال ───
+    # حقل الإدخال
     col_q, col_send = st.columns([5, 1])
-
     with col_q:
         user_question = st.text_input(
             "اسأل الـ AI...",
@@ -648,53 +575,44 @@ if selected_key == "ai_copilot":
             key="ai_question",
             label_visibility="collapsed"
         )
-
     with col_send:
         send_btn = st.button("✉️ إرسال", use_container_width=True)
 
     col_clr, _ = st.columns([1, 4])
-
     with col_clr:
         if st.button("🗑️ مسح المحادثة", use_container_width=True):
             st.session_state.chat_history = []
             st.rerun()
 
-    # معالجة إرسال السؤال
     if send_btn and user_question and user_question.strip():
         st.session_state.chat_history.append({
             "role": "user",
             "content": user_question
         })
-
         with st.spinner("🤖 AI يحلل بياناتك..."):
             try:
                 from core.knowledge_base import CopilotKnowledgeBase
                 from core.ai_copilot import AIOperationsCopilot
-
                 kb = CopilotKnowledgeBase()
                 copilot = AIOperationsCopilot(
                     portfolio_df=st.session_state.ai_portfolio_df,
                     payments_df=st.session_state.ai_payments_df,
                     kb=kb
                 )
-
                 answer = copilot.ask(
                     question=user_question,
                     selected_supervisors=st.session_state.ai_selected_sups or None
                 )
-
             except Exception as e:
                 answer = f"⚠️ حدث خطأ أثناء تحليل البيانات: {e}"
-
         st.session_state.chat_history.append({
             "role": "ai",
             "content": answer
         })
-
         st.session_state.ai_question = ""
         st.rerun()
 
-    # إذا لم يتم رفع ملف المحفظة (رسالة توجيهية)
+    # إذا لم يتم رفع ملف المحفظة
     if st.session_state.ai_portfolio_df is None:
         st.markdown("""
         <div style="
@@ -719,7 +637,6 @@ if selected_key == "ai_copilot":
 #  باقي الموديولات (جميع الموديولات عدا AI Copilot)
 # ════════════════════════════════════════════════════════════════════
 else:
-    # Header
     st.markdown(f"""
     <div style="padding: 16px 0 8px 0;">
         <h2 style="color:#c084fc; font-weight:800; margin-bottom:4px;">{module_info['name']}</h2>
@@ -728,7 +645,7 @@ else:
     """, unsafe_allow_html=True)
     st.info(module_info["desc"])
 
-    # ─── قسم رفع الملفات ───
+    # ─── رفع الملفات ───
     st.markdown("#### 📂 رفع الملفات المطلوبة")
     uploaded_files = {}
     cols_upload = st.columns(len(module_info["files"]))
@@ -740,8 +657,12 @@ else:
                 key=f"{selected_key}_{fspec['key']}"
             )
 
-    # ─── معطيات السحب والتدوير ───
+    # ─── معطيات خاصة بكل موديول ───
     rotation_params = {}
+    balancing_params = {}
+    ops_params = {}
+
+    # Rotation
     if selected_key == "rotation" and uploaded_files.get("portfolio"):
         portfolio_file = uploaded_files["portfolio"]
         with tempfile.NamedTemporaryFile(delete=False, suffix=".xlsx") as tmp_scan:
@@ -782,8 +703,7 @@ else:
             except Exception:
                 pass
 
-    # ─── واجهة سحب وتوزيع المحافظ ───
-    balancing_params = {}
+    # Balancing
     source_ports = []
     target_ports = []
     if selected_key == "balancing" and uploaded_files.get("portfolio"):
@@ -842,8 +762,7 @@ else:
             except Exception:
                 pass
 
-    # ─── واجهة مركز تقارير العمليات ───
-    ops_params = {}
+    # Operations
     if selected_key == "operations" and uploaded_files.get("portfolio"):
         portfolio_file = uploaded_files["portfolio"]
         with tempfile.NamedTemporaryFile(delete=False, suffix=".xlsx") as tmp_scan:
@@ -918,7 +837,6 @@ else:
     for fspec in module_info["files"]:
         if fspec["required"] and not uploaded_files.get(fspec["key"]):
             ready_to_run = False
-
     if selected_key == "rotation" and not rotation_params:
         ready_to_run = False
     if selected_key == "balancing" and not balancing_params:
@@ -972,13 +890,11 @@ else:
                     r = SystemErrorsModule().run(portfolio, promise)
                     stats.update(r["stats"])
                     writer.write_errors(r["data"])
-
                 elif task_id == 2:
                     from modules.module2_contact import ContactStatusModule
                     r = ContactStatusModule().run(portfolio)
                     stats.update(r["stats"])
                     writer.write_contact(r["data"], r["pivot_supervisor"], r["pivot_collector"], r["pivot_status"])
-
                 elif task_id == 3:
                     from modules.module3_neglect import NeglectModule
                     r = NeglectModule().run(portfolio)
@@ -988,13 +904,11 @@ else:
                         r["pivot_supervisor"], r["pivot_collector"], r["pivot_status"],
                         r["pivot_branch"], r["pivot_portfolio"], r["pivot_days"]
                     )
-
                 elif task_id == 7:
                     from modules.module7_targets import TargetCustomersModule
                     r = TargetCustomersModule().run(portfolio, promise, pl.DataFrame())
                     stats.update(r["stats"])
                     writer.write_targets(r["data"], r["pivot_supervisor"])
-
                 elif task_id == 6:
                     sup = rotation_params["supervisor"]
                     col = rotation_params["collector"]
@@ -1005,7 +919,6 @@ else:
                         r["data"], r["execution_report"],
                         r["distribution_summary"], r["withdrawal_summary"]
                     )
-
                 elif task_id == 8:
                     from modules.module8_balancing import PortfolioBalancingModule
                     tgt = balancing_params.get("target") or None
@@ -1021,7 +934,6 @@ else:
                         r.get("planning_sheet"), r.get("source_summary"),
                         r.get("final_result_sheet")
                     )
-
                 elif task_id == 9:
                     from modules.module9_operations_report import OperationsReportModule
                     pmt_df = dfs.get("payments")
@@ -1055,7 +967,6 @@ else:
             st.balloons()
             st.success("✨ اكتملت معالجة البيانات بنجاح وتم إنشاء التقرير المنسق!")
 
-            # ─── عرض الإحصائيات ───
             st.markdown("#### 📊 ملخص نتائج التقرير")
             stats_cols = st.columns(min(len(stats), 4))
             for j, (k, v) in enumerate(stats.items()):
@@ -1063,7 +974,6 @@ else:
                 with stats_cols[col_idx]:
                     st.metric(label=k, value=str(v))
 
-            # جدول توزيع المحصلين
             if task_id == 8 and r is not None and "summary_pivot" in r:
                 st.markdown("---")
                 st.markdown("#### 📋 جدول ملخص التوزيع النهائي للمحصلين")
@@ -1076,7 +986,6 @@ else:
                     show_df = show_df.filter(~pl.col(first_col).cast(pl.String).str.contains("📉|📈"))
                     st.dataframe(show_df.to_pandas(), use_container_width=True, hide_index=True)
 
-            # ─── زر التحميل ───
             if out_path and os.path.exists(out_path):
                 with open(out_path, "rb") as f_out:
                     excel_bytes = f_out.read()
