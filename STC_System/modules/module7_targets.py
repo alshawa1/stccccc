@@ -2,18 +2,12 @@
 modules/module7_targets.py
 ──────────────────────────
 Module 7 — العملاء المستهدفة (Target Customers) using Polars.
-Works on the main portfolio file (المحفظة الموزعة).
 
-STRICT RULES & WORKFLOW:
-1. Initial Status Filter:
-   - "الحالة الرئيسية" MUST be: ("سداد جزئي", "واعد بالسداد", "متابعة")
-   - OR "الحالة الرئيسية" == "متوفي" AND "الحالة الفرعية" contains "واعد" (الورثة واعدين).
-2. Priority Disqualification:
-   - Full Payment ("تم السداد بالكامل", etc.) -> NON-TARGETED.
-   - Disqualification / Rejection / Non-contact / Stalls (with typos & variations) -> NON-TARGETED.
-3. Strict Target Classification:
-   - ONLY IF a customer passes the initial filter AND contains a STRICT POSITIVE KEYWORD -> "مستهدف".
-   - Anything else -> "غير مستهدف".
+STRICT TWO-STEP PROCESS:
+STEP 1: Strictly filter rows by "الحالة الرئيسية" and "الحالة الفرعية" FIRST.
+        Rows that do not match are completely ignored and dropped before reading "المتابعة".
+STEP 2: For the matching rows only, scan "المتابعة" for positive keywords 
+        while prioritizing negative exclusions (like "ما بسدد", "سحب", etc.).
 """
 from __future__ import annotations
 
@@ -27,7 +21,7 @@ _log = logging.getLogger("Module7_Targets")
 POSITIVE = "مستهدف"
 NEGATIVE = "غير مستهدف"
 
-# ── 1. Full Payment Disqualification (تم السداد بالكامل) ────────────────────────
+# ── 1. Full Payment Disqualification ───────────────────────────────────────────
 FULLY_PAID_KEYWORDS = [
     "تم السداد", "سدد كامل", "كامل المديونية", "كامل المديونيه", "كامل المبلغ",
     "سداد كامل", "مسدد بالكامل", "سدد المديونية كامله", "سدد المديونية كاملة",
@@ -60,36 +54,27 @@ TARGET_CATEGORIES = {
         "بانتظار المستحقات", "المستحقات", "مستحقات", "بعد البيع", "دخل", "بيع"
     ],
     "💳 مرتبطة بتحويل أو إيداع أو دفعات": [
-        "بعد التحويل", "بعد الإيداع", "بعد الايداع", "سدد دفعه", "سدد دفعة",
+        "بعد التحويل", "بعد الإيداع", "بعد الايداع", "سدد دفعه", "سدد دفعة", "سدد دفعه الشهر", "سدد دفعة الشهر",
         "على دفعات", "علي دفعات", "تحويل", "إيداع", "ايداع", "دفعة", "دفعه",
         "دفعات", "بسدد", "بيسدد", "يسدد", "سيسدد", "سدد 200", "تسدد", "سدد"
     ]
 }
 
-# ── 3. Disqualifying Negative / Non-Contact / Stall / Typo Keywords ────────────
+# ── 3. Disqualifying Negative Keywords inside Follow-ups (المتابعة) ─────────────
 DISQUALIFY_KEYWORDS = [
-    # عدم الرد بأشكاله المختلفة والأخطاء الإملائية
+    # نفي ومماطلة صريحة
+    "ما بسدد", "افاد انو ما بسدد", "افاد انه ما بسدد", "ما يسدد", "افاد انو ما يسدد",
+    "ما عندي وماني مسدد", "ما عندي وماني", "ماني مسدد", "ومصر يسدد", "ومصر ما يسدد",
+    "مماطل", "ماطل", "رافض", "رفض", "رفض السداد", "رافض السداد", "انكر", "أنكر", "ينكر",
+    "تنازل", "سحب", "مريض", "مسافر", "مسافر بمصر", "لا تتم",
+    
+    # عدم الرد والإغلاق
     "لايرد", "لا يرد", "لا يررد", "لابرد", "مايرد", "مايردش", "ما يرد", "لم يرد", "لا ترد", "لا رد",
     "لم يتم الرد", "لمم يتم الرد", "لم يتم رد", "ولا ترد", "م بيشبك", "م يشبك", "م ىيشبك", "ما يشبك", "مبيشبك", "لا يجيب",
-    "بريد", "بريد صوتي", "بيزي", "مشغول", "ما يمسك",
-    
-    # إغلاق / إلغاء / تسكير الخط والتطنيش
-    "مغلق", "قفل", "قفل الخط", "يسكر الخط", "سكر الخط", "قفلت", "ردت وقفلت", "يكنسل", "كنسل", "خارج التغطية",
-    "سحب", "غير مستعمل", "تحديث متابعه", "تحديث متابعة", "اخوه مو موجود", "أخوه مو موجود",
-    "يصلي", "صلي", "في العمل", "في الشغل", "لايمكن", "لا يمكن", "بيراجع الفرع",
+    "بريد", "بريد صوتي", "بيزي", "مشغول", "ما يمسك", "مغلق", "قفل", "قفل الخط", "يسكر الخط", "سكر الخط", "قفلت",
+    "ردت وقفلت", "يكنسل", "كنسل", "خارج التغطية", "تحديث متابعه", "تحديث متابعة", "اخوه مو موجود",
     "اجتماع", "في اجتماع", "الوقت غير مناسب", "غير مناسب", "يفصل", "فصل", "بيفصل", "عدم تجاوب", "لعدم التجاوب",
-    
-    # رد بدون فائدة / صمت
-    "رد وساكت", "رد و ساكت", "رد ويسكت", "رد بدون تجاوب", "يرد وما يتكلم", "يرد وساكته", "ردت وساكته", "رد وبعد", "رد وقفل",
-    "ساكت", "ساكته", "يرد يسكت", "يتكلم",
-    
-    # رفض صريح / مماطلة (تمنع التقاط الكلمات الإيجابية بالخطأ)
-    "ما بسدد", "ما يسدد", "مماطل", "ماطل", "ماني مسدد", "ما عندي وماني مسدد", "ما عندي وماني", "ما عندي", "ما يبي", "ما يبي ازعاج",
-    "رافض", "رفض", "رفض السداد", "رافض السداد", "انكر", "أنكر", "ينكر", "هرب", "خروج والعوده", "خروج وعودة", "مو موجود", "نايم", "نايمه",
-    "تنكر", "ما يقدر", "مقدر اسدد", "ما تقدر",
-    
-    # أرقام خاطئة / مستبعدين
-    "غير صحيح", "لا يخص", "لايخص", "رقم خطأ", "رقم غلط", "خروج نهائي", "سجن", "مسجون"
+    "رد وساكت", "رد و ساكت", "رد ويسكت", "رد بدون تجاوب", "يرد وما يتكلم", "يرد وساكته", "ساكت", "ساكته"
 ]
 
 
@@ -105,10 +90,27 @@ class TargetCustomersModule:
         promise: pl.DataFrame | None = None,
         maharah: pl.DataFrame | None = None,
     ) -> Dict[str, Any]:
-        _log.info("▶ بدء تحديد العملاء المستهدفة (تطبيق الفلترة المبدئية والكلمات الإيجابية الصارمة)")
+        _log.info("▶ بدء تحديد العملاء المستهدفة")
 
-        # ── الخطوة 1: الفلترة المبدئية للحالات المحددة ───────────────────────
-        filtered_portfolio = self._filter_initial_statuses(portfolio)
+        # ── الخطوة الأولى: الفلترة الصارمة بحسب الحالة الرئيسية والفرعية ────────
+        filtered_portfolio = self._step1_filter_by_status(portfolio)
+
+        if filtered_portfolio.is_empty():
+            _log.warning("لا توجد سجلات تطابق شروط الحالة الرئيسية والفرعية!")
+            empty_df = portfolio.head(0).with_columns([
+                pl.lit(NEGATIVE).alias(self.CLASS_COL),
+                pl.lit("❌ غير مستهدف").alias(self.CATEGORY_COL),
+                pl.lit("غير مطابق لشروط الحالة الرئيسية/الفرعية").alias(self.REASON_COL),
+                pl.lit(2).cast(pl.Int32).alias(self.PRIORITY_COL),
+                pl.lit(1.0).alias("عدد العملاء")
+            ])
+            return {
+                "data": empty_df,
+                "positive_data": empty_df.head(0),
+                "pivot_supervisor": pl.DataFrame(),
+                "pivot_collector": pl.DataFrame(),
+                "stats": {"إجمالي العملاء بعد الفلترة": 0, "مستهدف": 0, "غير مستهدف": 0, "نسبة المستهدفين %": 0.0}
+            }
 
         id_col = next((c for c in ["رقم الهوية", "الهوية"] if c in filtered_portfolio.columns), None)
         if id_col:
@@ -118,8 +120,8 @@ class TargetCustomersModule:
         else:
             filtered_portfolio = filtered_portfolio.with_columns(pl.lit(1.0).alias("عدد العملاء"))
 
-        # ── الخطوة 2: تصنيف العملاء بناءً على الكلمات الإيجابية والمستبعدة ──
-        df = self._classify(filtered_portfolio.clone())
+        # ── الخطوة الثانية: فحص عمود المتابعة للسجلات المقبولة فقط ─────────────
+        df = self._step2_classify_notes(filtered_portfolio.clone())
 
         positive_df = df.filter(pl.col(self.CLASS_COL) == POSITIVE)
 
@@ -155,7 +157,7 @@ class TargetCustomersModule:
 
     @staticmethod
     def _normalize_text_str(s: str) -> str:
-        """توحيد الأحرف للنصوص الثابتة والقواميس وتنظيف التشكيل."""
+        """توحيد الأحرف للنصوص الثابتة والقواميس."""
         return (
             s.replace("أ", "ا")
             .replace("إ", "ا")
@@ -167,7 +169,7 @@ class TargetCustomersModule:
         )
 
     def _normalize_text(self, text_col: str) -> pl.Expr:
-        """توحيد الأحرف لعمود النص داخل Polars لحل أخطاء الإملاء والتشكيل."""
+        """توحيد الأحرف لعمود النص داخل Polars."""
         return (
             pl.col(text_col)
             .fill_null("")
@@ -181,35 +183,38 @@ class TargetCustomersModule:
             .str.replace_all("ى", "ي")
         )
 
-    def _filter_initial_statuses(self, df: pl.DataFrame) -> pl.DataFrame:
+    def _step1_filter_by_status(self, df: pl.DataFrame) -> pl.DataFrame:
         """
-        فلترة الملف المبدئية:
-        - الحالة الرئيسية: (سداد جزئي، واعد بالسداد، متابعة)
-        - أو (متوفي + الحالة الفرعية تحتوي على كلمة 'واعد' مثل الورثة واعدين)
+        [المرحلة الأولى]: الفلترة المبدئية قبل النظر في المتابعة إطلاقاً.
+        تُبقي فقط الصفوف التي تحقق:
+        1. الحالة الرئيسية = (سداد جزئي OR واعد بالسداد OR متابعة)
+        2. OR (الحالة الرئيسية = متوفي AND الحالة الفرعية تحتوي على 'واعد')
         """
         main_col = next((c for c in ["الحالة الرئيسية", "الحالة"] if c in df.columns), None)
         sub_col  = next((c for c in ["الحالة الفرعية"] if c in df.columns), None)
 
         if not main_col:
+            _log.warning("لم يتم العثور على عمود الحالة الرئيسية!")
             return df
 
         main_expr = self._normalize_text(main_col)
         sub_expr  = self._normalize_text(sub_col) if sub_col else pl.lit("")
 
-        # 1. الحالات الرئيسية: سداد جزئي، واعد بالسداد، متابعة
+        # 1. الحالات الرئيسية المسموح بها فقط
         allowed_main = main_expr.str.contains("سداد جزئي|واعد بالسداد|متابعه|متابعة")
 
-        # 2. حالة المتوفي: متوفي + الورثة واعدين
+        # 2. استثناء المتوفي: يجب أن تكون الحالة الفرعية واعدين
         is_deceased_promised = (main_expr.str.contains("متوفي")) & (sub_expr.str.contains("واعد"))
 
         filtered_df = df.filter(allowed_main | is_deceased_promised)
-        _log.info(f"إجمالي السجلات: {len(df)} | بعد الفلترة المبدئية: {len(filtered_df)}")
+        _log.info(f"إجمالي الملف: {len(df)} | المقبول بعد فلترة الحالة (قبل المتابعة): {len(filtered_df)}")
         return filtered_df
 
-    def _classify(self, df: pl.DataFrame) -> pl.DataFrame:
+    def _step2_classify_notes(self, df: pl.DataFrame) -> pl.DataFrame:
+        """
+        [المرحلة الثانية]: فحص عمود 'المتابعة' فقط للصفوف التي اجتازت المرحلة الأولى.
+        """
         note_col = next((c for c in ["المتابعة", "الملاحظة", "الملاحظات", "ملاحظة"] if c in df.columns), None)
-        main_col = next((c for c in ["الحالة الرئيسية", "الحالة"] if c in df.columns), None)
-        sub_col  = next((c for c in ["الحالة الفرعية"] if c in df.columns), None)
 
         if not note_col:
             _log.warning("لم يتم العثور على عمود المتابعة!")
@@ -221,22 +226,14 @@ class TargetCustomersModule:
             ])
 
         note_expr = self._normalize_text(note_col)
-        main_expr = self._normalize_text(main_col) if main_col else pl.lit("")
-        sub_expr  = self._normalize_text(sub_col) if sub_col else pl.lit("")
 
-        # ── 1. فحص سداد كامل المديونية (أولوية استبعاد أولى) ──────────────────
+        # 1. فحص سداد كامل المديونية في المتابعة
         has_fully_paid = pl.lit(False)
         for kw in FULLY_PAID_KEYWORDS:
             kw_norm = self._normalize_text_str(kw)
-            has_fully_paid = (
-                has_fully_paid 
-                | note_expr.str.contains(kw_norm, literal=True) 
-                | main_expr.str.contains(kw_norm, literal=True) 
-                | sub_expr.str.contains(kw_norm, literal=True)
-            )
+            has_fully_paid = has_fully_paid | note_expr.str.contains(kw_norm, literal=True)
 
-        # ── 2. فحص الكلمات السلبية والمستبعدة (أولوية استبعاد ثانية) ───────────
-        # يفحص أولاً عبارات مثل "ما بسدد" / "لا يرد" ويستبعدها قبل فحص الكلمات الإيجابية
+        # 2. فحص العبارات السلبية / المماطلة / النفي في المتابعة (تُستبعد فوراً)
         has_disqualify = pl.lit(False)
         disqualify_reasons = []
         for kw in DISQUALIFY_KEYWORDS:
@@ -249,7 +246,7 @@ class TargetCustomersModule:
 
         disqualify_reason_expr = pl.coalesce(disqualify_reasons).fill_null("عدم تواصل / استبعاد")
 
-        # ── 3. فحص الفئات الإيجابية الست ─────────────────────────────────────
+        # 3. فحص الكلمات الإيجابية في المتابعة
         category_expr_list = []
         has_any_positive = pl.lit(False)
 
@@ -257,8 +254,7 @@ class TargetCustomersModule:
             cat_match = pl.lit(False)
             for kw in kw_list:
                 kw_norm = self._normalize_text_str(kw)
-                # فحص الكلمة الإيجابية في المتابعة والحالة الفرعية
-                cat_match = cat_match | note_expr.str.contains(kw_norm, literal=True) | sub_expr.str.contains(kw_norm, literal=True)
+                cat_match = cat_match | note_expr.str.contains(kw_norm, literal=True)
             
             has_any_positive = has_any_positive | cat_match
             category_expr_list.append(
@@ -267,8 +263,7 @@ class TargetCustomersModule:
 
         pos_category_expr = pl.coalesce(category_expr_list)
 
-        # ── 4. تطبيق قاعدة الاستهداف الصارمة ────────────────────────────────────
-        # لا يعتبر العميل مستهدفاً إلا إذا تحققت كلمة إيجابية صريحة، وكان غير مسدد بالكامل وغير مستبعد
+        # 4. القرار النهائي للاستهداف
         is_targeted = (~has_fully_paid) & (~has_disqualify) & has_any_positive
 
         class_expr = pl.when(is_targeted).then(pl.lit(POSITIVE)).otherwise(pl.lit(NEGATIVE))
