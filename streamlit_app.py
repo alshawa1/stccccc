@@ -619,30 +619,34 @@ if selected_key == "ai_copilot":
                     </div>
                     """, unsafe_allow_html=True)
         # حقل الإدخال
-        col_q, col_send = st.columns([5, 1])
-        with col_q:
-            user_question = st.text_input(
-                "اسأل الـ AI...",
-                placeholder="مثال: كم نسبة التغطية اليوم؟",
-                key="ai_question",
-                label_visibility="collapsed"
-            )
-        with col_send:
-            send_btn = st.button("✉️ إرسال", use_container_width=True)
-        col_clr, _ = st.columns([1, 4])
-        with col_clr:
-            if st.button("🗑️ مسح المحادثة", use_container_width=True):
-                st.session_state.chat_history = []
-                st.rerun()
-if send_btn and user_question and user_question.strip():
+        # حقل الإدخال
+col_q, col_send = st.columns([5, 1])
 
-    # حفظ سؤال المستخدم
+with col_q:
+    user_question = st.text_input(
+        "اسأل الـ AI...",
+        placeholder="مثال: كم نسبة التغطية اليوم؟",
+        key="ai_question",
+        label_visibility="collapsed"
+    )
+
+with col_send:
+    send_btn = st.button("✉️ إرسال", use_container_width=True)
+
+col_clr, _ = st.columns([1, 4])
+
+with col_clr:
+    if st.button("🗑️ مسح المحادثة", use_container_width=True):
+        st.session_state.chat_history = []
+        st.rerun()
+
+if send_btn and user_question.strip():
+
     st.session_state.chat_history.append({
         "role": "user",
         "content": user_question
     })
 
-    # تشغيل الـ AI
     with st.spinner("🤖 AI يحلل بياناتك..."):
         try:
             from core.knowledge_base import CopilotKnowledgeBase
@@ -664,15 +668,14 @@ if send_btn and user_question and user_question.strip():
         except Exception as e:
             answer = f"⚠️ حدث خطأ أثناء تحليل البيانات: {e}"
 
-    # حفظ رد الـ AI
     st.session_state.chat_history.append({
         "role": "ai",
         "content": answer
     })
 
-    # مسح مربع الكتابة حتى لا يعيد إرسال السؤال مرة أخرى
     st.session_state.ai_question = ""
 
+    st.rerun()
     # إعادة تحميل الصفحة لإظهار الرد
     st.rerun()
     else:
