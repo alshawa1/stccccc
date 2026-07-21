@@ -619,64 +619,63 @@ if selected_key == "ai_copilot":
                     </div>
                     """, unsafe_allow_html=True)
         # حقل الإدخال
-     # حقل الإدخال
-col_q, col_send = st.columns([5, 1])
+        col_q, col_send = st.columns([5, 1])
 
-with col_q:
-    user_question = st.text_input(
-        "اسأل الـ AI...",
-        placeholder="مثال: كم نسبة التغطية اليوم؟",
-        key="ai_question",
-        label_visibility="collapsed"
-    )
-
-with col_send:
-    send_btn = st.button("✉️ إرسال", use_container_width=True)
-
-col_clr, _ = st.columns([1, 4])
-
-with col_clr:
-    if st.button("🗑️ مسح المحادثة", use_container_width=True):
-        st.session_state.chat_history = []
-        st.rerun()
-
-if send_btn and user_question.strip():
-
-    st.session_state.chat_history.append({
-        "role": "user",
-        "content": user_question
-    })
-
-    with st.spinner("🤖 AI يحلل بياناتك..."):
-        try:
-            from core.knowledge_base import CopilotKnowledgeBase
-            from core.ai_copilot import AIOperationsCopilot
-
-            kb = CopilotKnowledgeBase()
-
-            copilot = AIOperationsCopilot(
-                portfolio_df=st.session_state.ai_portfolio_df,
-                payments_df=st.session_state.ai_payments_df,
-                kb=kb
+        with col_q:
+            user_question = st.text_input(
+                "اسأل الـ AI...",
+                placeholder="مثال: كم نسبة التغطية اليوم؟",
+                key="ai_question",
+                label_visibility="collapsed"
             )
 
-            answer = copilot.ask(
-                question=user_question,
-                selected_supervisors=st.session_state.ai_selected_sups or None
-            )
+        with col_send:
+            send_btn = st.button("✉️ إرسال", use_container_width=True)
 
-        except Exception as e:
-            answer = f"⚠️ حدث خطأ أثناء تحليل البيانات: {e}"
+        col_clr, _ = st.columns([1, 4])
 
-    st.session_state.chat_history.append({
-        "role": "ai",
-        "content": answer
-    })
+        with col_clr:
+            if st.button("🗑️ مسح المحادثة", use_container_width=True):
+                st.session_state.chat_history = []
+                st.rerun()
 
-    st.session_state.ai_question = ""
+        if send_btn and user_question and user_question.strip():
 
-    st.rerun()
-else:
+            st.session_state.chat_history.append({
+                "role": "user",
+                "content": user_question
+            })
+
+            with st.spinner("🤖 AI يحلل بياناتك..."):
+                try:
+                    from core.knowledge_base import CopilotKnowledgeBase
+                    from core.ai_copilot import AIOperationsCopilot
+
+                    kb = CopilotKnowledgeBase()
+
+                    copilot = AIOperationsCopilot(
+                        portfolio_df=st.session_state.ai_portfolio_df,
+                        payments_df=st.session_state.ai_payments_df,
+                        kb=kb
+                    )
+
+                    answer = copilot.ask(
+                        question=user_question,
+                        selected_supervisors=st.session_state.ai_selected_sups or None
+                    )
+
+                except Exception as e:
+                    answer = f"⚠️ حدث خطأ أثناء تحليل البيانات: {e}"
+
+            st.session_state.chat_history.append({
+                "role": "ai",
+                "content": answer
+            })
+
+            st.session_state.ai_question = ""
+
+            st.rerun()
+    else:
         st.markdown("""
         <div style="
             text-align:center;
