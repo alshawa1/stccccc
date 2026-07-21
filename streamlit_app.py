@@ -634,29 +634,47 @@ if selected_key == "ai_copilot":
             if st.button("🗑️ مسح المحادثة", use_container_width=True):
                 st.session_state.chat_history = []
                 st.rerun()
-        if (send_btn or user_question) and user_question and user_question.strip():
-            if send_btn or True:
-                # حفظ سؤال المستخدم
-                st.session_state.chat_history.append({"role": "user", "content": user_question})
-                # تشغيل الـ AI
-                with st.spinner("🤖 AI يحلل بياناتك..."):
-                    try:
-                        from core.knowledge_base import CopilotKnowledgeBase
-                        from core.ai_copilot import AIOperationsCopilot
-                        kb = CopilotKnowledgeBase()
-                        copilot = AIOperationsCopilot(
-                            portfolio_df=st.session_state.ai_portfolio_df,
-                            payments_df=st.session_state.ai_payments_df,
-                            kb=kb
-                        )
-                        answer = copilot.ask(
-                            question=user_question,
-                            selected_supervisors=st.session_state.ai_selected_sups or None
-                        )
-                    except Exception as e:
-                        answer = f"⚠️ حدث خطأ أثناء تحليل البيانات: {e}"
-                st.session_state.chat_history.append({"role": "ai", "content": answer})
-                st.rerun()
+if send_btn and user_question and user_question.strip():
+
+    # حفظ سؤال المستخدم
+    st.session_state.chat_history.append({
+        "role": "user",
+        "content": user_question
+    })
+
+    # تشغيل الـ AI
+    with st.spinner("🤖 AI يحلل بياناتك..."):
+        try:
+            from core.knowledge_base import CopilotKnowledgeBase
+            from core.ai_copilot import AIOperationsCopilot
+
+            kb = CopilotKnowledgeBase()
+
+            copilot = AIOperationsCopilot(
+                portfolio_df=st.session_state.ai_portfolio_df,
+                payments_df=st.session_state.ai_payments_df,
+                kb=kb
+            )
+
+            answer = copilot.ask(
+                question=user_question,
+                selected_supervisors=st.session_state.ai_selected_sups or None
+            )
+
+        except Exception as e:
+            answer = f"⚠️ حدث خطأ أثناء تحليل البيانات: {e}"
+
+    # حفظ رد الـ AI
+    st.session_state.chat_history.append({
+        "role": "ai",
+        "content": answer
+    })
+
+    # مسح مربع الكتابة حتى لا يعيد إرسال السؤال مرة أخرى
+    st.session_state.ai_question = ""
+
+    # إعادة تحميل الصفحة لإظهار الرد
+    st.rerun()
     else:
         st.markdown("""
         <div style="
