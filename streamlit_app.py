@@ -57,8 +57,6 @@ hr { border-color: rgba(79, 45, 127, 0.3) !important; }
 .stc-logo-text { font-size: 52px; font-weight: 900; background: linear-gradient(135deg, #a855f7, #7c3aed, #4f2d7f); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; letter-spacing: 2px; line-height: 1; }
 .stc-tagline { color: #a78bfa; font-size: 15px; margin-top: 4px; }
 .purple-divider { height: 3px; background: linear-gradient(90deg, transparent, #7c3aed, #a855f7, #7c3aed, transparent); border-radius: 3px; margin: 12px 0; }
-@keyframes shimmer { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
-.loading-text { background: linear-gradient(90deg, #4f2d7f, #a855f7, #4f2d7f); background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: shimmer 2s linear infinite; }
 [data-testid="stDataFrame"] { border-radius: 12px; overflow: hidden; border: 1px solid rgba(79, 45, 127, 0.3); }
 [data-testid="stFileUploader"] { background: rgba(79, 45, 127, 0.08) !important; border: 2px dashed rgba(124, 58, 237, 0.4) !important; border-radius: 14px !important; padding: 12px; transition: border-color 0.2s, background 0.2s; }
 [data-testid="stFileUploader"]:hover { border-color: rgba(124, 58, 237, 0.7) !important; background: rgba(79, 45, 127, 0.14) !important; }
@@ -290,14 +288,14 @@ if selected_key == "ai_copilot":
     """, unsafe_allow_html=True)
 
     # تهيئة session state
-    for key in ["chat_history", "ai_portfolio_df", "ai_payments_df", "ai_supervisors", "ai_selected_sups"]:
+    for key in ["chat_history", "ai_portfolio_df", "ai_payments_df", "ai_supervisors", "ai_selected_sups", "ai_question"]:
         if key not in st.session_state:
             if key == "chat_history":
                 st.session_state[key] = []
             elif key in ["ai_portfolio_df", "ai_payments_df"]:
                 st.session_state[key] = None
             else:
-                st.session_state[key] = []
+                st.session_state[key] = [] if key != "ai_question" else ""
 
     # رفع الملفات
     st.markdown("#### 📂 رفع الملفات")
@@ -431,7 +429,7 @@ if selected_key == "ai_copilot":
             except Exception as e:
                 answer = f"⚠️ حدث خطأ أثناء تحليل البيانات: {e}"
         st.session_state.chat_history.append({"role": "ai", "content": answer})
-        st.session_state.ai_question = ""
+        # إعادة تعيين حقل الإدخال بعد الإرسال (سيتم مسحه لأن `ai_question` مرتبط بـ st.text_input وسيتم تحديثه تلقائياً عند إعادة التشغيل)
         st.rerun()
 
     if st.session_state.ai_portfolio_df is None:
@@ -819,5 +817,5 @@ else:
                     pass
 
 # ════════════════════════════════════════════════════════════════════
-#  نهاية الملف - لا توجد أي أوامر بعد هذا السطر
+#  نهاية الملف
 # ════════════════════════════════════════════════════════════════════
