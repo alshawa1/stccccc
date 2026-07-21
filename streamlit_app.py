@@ -568,135 +568,139 @@ if selected_key == "ai_copilot":
                 pass
     # ─── فلتر المشرفين ───
     if st.session_state.ai_portfolio_df is not None:
-        st.markdown("<div class='purple-divider'></div>", unsafe_allow_html=True)
-        st.markdown("#### 👥 تحديد نطاق العمل (المشرفين)")
-        st.caption("اختر المشرفين الذين تريد أن يعمل الـ AI على بياناتهم. اتركها فارغة للعمل على الكل.")
-        sups_all = st.session_state.ai_supervisors
-        if sups_all:
-            selected_sups = st.multiselect(
-                "اختر المشرفين:",
-                options=sups_all,
-                default=st.session_state.ai_selected_sups,
-                key="sup_multiselect",
-                label_visibility="collapsed"
-            )
-            st.session_state.ai_selected_sups = selected_sups
-            if selected_sups:
-                st.info(f"🔍 العمل على: {', '.join(selected_sups)} ({len(selected_sups)} مشرف)")
-            else:
-                st.info("🌐 العمل على المحفظة الكاملة (جميع المشرفين)")
+    st.markdown("<div class='purple-divider'></div>", unsafe_allow_html=True)
+    st.markdown("#### 👥 تحديد نطاق العمل (المشرفين)")
+    st.caption("اختر المشرفين الذين تريد أن يعمل الـ AI على بياناتهم. اتركها فارغة للعمل على الكل.")
+    sups_all = st.session_state.ai_supervisors
+    if sups_all:
+        selected_sups = st.multiselect(
+            "اختر المشرفين:",
+            options=sups_all,
+            default=st.session_state.ai_selected_sups,
+            key="sup_multiselect",
+            label_visibility="collapsed"
+        )
+        st.session_state.ai_selected_sups = selected_sups
+        if selected_sups:
+            st.info(f"🔍 العمل على: {', '.join(selected_sups)} ({len(selected_sups)} مشرف)")
         else:
-            st.warning("⚠️ لم يتم اكتشاف عمود المشرفين تلقائياً. سيعمل الـ AI على كامل المحفظة.")
-        # ─── واجهة الدردشة ───
-        st.markdown("<div class='purple-divider'></div>", unsafe_allow_html=True)
-        st.markdown("#### 🧠 تحدث مع AI Operations Copilot")
-        # عرض رسائل المحادثة
-        chat_container = st.container()
-        with chat_container:
-            if not st.session_state.chat_history:
-                st.markdown("""
-                <div class="chat-bubble-ai">
-                    <strong>🤖 مرحباً!</strong> أنا AI Operations Copilot الخاص بـ STC.<br><br>
-                    يمكنني الإجابة عن أي سؤال حول محفظتك. جرب مثلاً:<br>
-                    • <em>كم نسبة التغطية اليوم؟</em><br>
-                    • <em>كم عدد العملاء الإجمالي؟</em><br>
-                    • <em>من أفضل مشرف في المحفظة؟</em><br>
-                    • <em>ما توصيتك لتحسين الأداء؟</em><br>
-                    • <em>كم إجمالي متبقي السداد؟</em>
+            st.info("🌐 العمل على المحفظة الكاملة (جميع المشرفين)")
+    else:
+        st.warning("⚠️ لم يتم اكتشاف عمود المشرفين تلقائياً. سيعمل الـ AI على كامل المحفظة.")
+
+    # ─── واجهة الدردشة ───
+    st.markdown("<div class='purple-divider'></div>", unsafe_allow_html=True)
+    st.markdown("#### 🧠 تحدث مع AI Operations Copilot")
+
+    # عرض رسائل المحادثة
+    chat_container = st.container()
+    with chat_container:
+        if not st.session_state.chat_history:
+            st.markdown("""
+            <div class="chat-bubble-ai">
+                <strong>🤖 مرحباً!</strong> أنا AI Operations Copilot الخاص بـ STC.<br><br>
+                يمكنني الإجابة عن أي سؤال حول محفظتك. جرب مثلاً:<br>
+                • <em>كم نسبة التغطية اليوم؟</em><br>
+                • <em>كم عدد العملاء الإجمالي؟</em><br>
+                • <em>من أفضل مشرف في المحفظة؟</em><br>
+                • <em>ما توصيتك لتحسين الأداء؟</em><br>
+                • <em>كم إجمالي متبقي السداد؟</em>
+            </div>
+            """, unsafe_allow_html=True)
+
+        for msg in st.session_state.chat_history:
+            if msg["role"] == "user":
+                st.markdown(f"""
+                <div class="chat-bubble-user">
+                    <strong>👤 أنت:</strong><br>{msg['content']}
                 </div>
                 """, unsafe_allow_html=True)
-            for msg in st.session_state.chat_history:
-                if msg["role"] == "user":
-                    st.markdown(f"""
-                    <div class="chat-bubble-user">
-                        <strong>👤 أنت:</strong><br>{msg['content']}
-                    </div>
-                    """, unsafe_allow_html=True)
-                else:
-                    st.markdown(f"""
-                    <div class="chat-bubble-ai">
-                        <strong>🤖 AI Copilot:</strong><br>{msg['content']}
-                    </div>
-                    """, unsafe_allow_html=True)
-       # ─── حقل الإدخال ───
-        col_q, col_send = st.columns([5, 1])
+            else:
+                st.markdown(f"""
+                <div class="chat-bubble-ai">
+                    <strong>🤖 AI Copilot:</strong><br>{msg['content']}
+                </div>
+                """, unsafe_allow_html=True)
 
-        with col_q:
-            user_question = st.text_input(
-                "اسأل الـ AI...",
-                placeholder="مثال: كم نسبة التغطية اليوم؟",
-                key="ai_question",
-                label_visibility="collapsed"
-            )
+    # ─── حقل الإدخال ───
+    col_q, col_send = st.columns([5, 1])
 
-        with col_send:
-            send_btn = st.button("✉️ إرسال", use_container_width=True)
+    with col_q:
+        user_question = st.text_input(
+            "اسأل الـ AI...",
+            placeholder="مثال: كم نسبة التغطية اليوم؟",
+            key="ai_question",
+            label_visibility="collapsed"
+        )
 
-        col_clr, _ = st.columns([1, 4])
+    with col_send:
+        send_btn = st.button("✉️ إرسال", use_container_width=True)
 
-        with col_clr:
-            if st.button("🗑️ مسح المحادثة", use_container_width=True):
-                st.session_state.chat_history = []
-                st.rerun()
+    col_clr, _ = st.columns([1, 4])
 
-        # معالجة إرسال السؤال
-        if send_btn and user_question and user_question.strip():
-            st.session_state.chat_history.append({
-                "role": "user",
-                "content": user_question
-            })
-
-            with st.spinner("🤖 AI يحلل بياناتك..."):
-                try:
-                    from core.knowledge_base import CopilotKnowledgeBase
-                    from core.ai_copilot import AIOperationsCopilot
-
-                    kb = CopilotKnowledgeBase()
-                    copilot = AIOperationsCopilot(
-                        portfolio_df=st.session_state.ai_portfolio_df,
-                        payments_df=st.session_state.ai_payments_df,
-                        kb=kb
-                    )
-
-                    answer = copilot.ask(
-                        question=user_question,
-                        selected_supervisors=st.session_state.ai_selected_sups or None
-                    )
-
-                except Exception as e:
-                    answer = f"⚠️ حدث خطأ أثناء تحليل البيانات: {e}"
-
-            st.session_state.chat_history.append({
-                "role": "ai",
-                "content": answer
-            })
-
-            st.session_state.ai_question = ""
+    with col_clr:
+        if st.button("🗑️ مسح المحادثة", use_container_width=True):
+            st.session_state.chat_history = []
             st.rerun()
 
-    else:
-        # الكرت يظهر إذا لم يتم رفع ملف المحفظة في قسم AI Copilot
-        st.markdown("""
-        <div style="
-            text-align:center;
-            padding: 60px 20px;
-            color: #64748b;
-            border: 2px dashed rgba(79,45,127,0.3);
-            border-radius: 20px;
-            margin-top: 24px;
-        ">
-            <div style="font-size:64px; margin-bottom:16px;">🤖</div>
-            <div style="font-size:18px; color:#a78bfa; font-weight:600;">
-                ارفع ملف المحفظة للبدء
-            </div>
-            <div style="font-size:14px; color:#64748b; margin-top:8px;">
-                سيقوم AI Operations Copilot بتحليل بياناتك فور رفع الملف
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
+    # معالجة إرسال السؤال
+    if send_btn and user_question and user_question.strip():
+        st.session_state.chat_history.append({
+            "role": "user",
+            "content": user_question
+        })
 
+        with st.spinner("🤖 AI يحلل بياناتك..."):
+            try:
+                from core.knowledge_base import CopilotKnowledgeBase
+                from core.ai_copilot import AIOperationsCopilot
+
+                kb = CopilotKnowledgeBase()
+                copilot = AIOperationsCopilot(
+                    portfolio_df=st.session_state.ai_portfolio_df,
+                    payments_df=st.session_state.ai_payments_df,
+                    kb=kb
+                )
+
+                answer = copilot.ask(
+                    question=user_question,
+                    selected_supervisors=st.session_state.ai_selected_sups or None
+                )
+
+            except Exception as e:
+                answer = f"⚠️ حدث خطأ أثناء تحليل البيانات: {e}"
+
+        st.session_state.chat_history.append({
+            "role": "ai",
+            "content": answer
+        })
+
+        st.session_state.ai_question = ""
+        st.rerun()
+
+else:
+    # الكرت يظهر إذا لم يتم رفع ملف المحفظة في قسم AI Copilot
+    st.markdown("""
+    <div style="
+        text-align:center;
+        padding: 60px 20px;
+        color: #64748b;
+        border: 2px dashed rgba(79,45,127,0.3);
+        border-radius: 20px;
+        margin-top: 24px;
+    ">
+        <div style="font-size:64px; margin-bottom:16px;">🤖</div>
+        <div style="font-size:18px; color:#a78bfa; font-weight:600;">
+            ارفع ملف المحفظة للبدء
+        </div>
+        <div style="font-size:14px; color:#64748b; margin-top:8px;">
+            سيقوم AI Operations Copilot بتحليل بياناتك فور رفع الملف
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 # ════════════════════════════════════════════════════════════════════
-#  واجهة باقي الموديولات (الموديولات الأصلية كما هي)
+# ════════════════════════════════════════════════════════════════════
+# واجهة باقي الموديولات (الموديولات الأصلية كما هي)
 # ════════════════════════════════════════════════════════════════════
 else:
     # ─── قسم رفع الملفات ───
@@ -753,270 +757,299 @@ else:
             except Exception:
                 pass
             
-    # ─── واجهة سحب وتوزيع المحافظ ───
-    balancing_params = {}
-    source_ports: list = []
-    target_ports: list = []
-    if selected_key == "balancing" and uploaded_files.get("portfolio"):
-        portfolio_file = uploaded_files["portfolio"]
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".xlsx") as tmp_scan:
-            tmp_scan.write(portfolio_file.getbuffer())
-            tmp_scan_path = tmp_scan.name
-        try:
-            portfolios, collector_map = scan_portfolio_for_balancing(tmp_scan_path)
-            if portfolios:
-                st.markdown("#### ⚖️ تحديد المحافظ")
-                c1, c2 = st.columns(2)
-                with c1:
-                    st.markdown("المحافظ المصدر (السحب منها):")
-                    source_ports = st.multiselect(
-                        label="اختر محفظة أو أكثر لسحب عملائها:",
-                        options=portfolios,
-                        key="bal_source",
-                        label_visibility="collapsed"
-                    )
-                    if source_ports:
-                        total_source_col = sum(len(collector_map.get(p, [])) for p in source_ports)
-                        st.info(f"👥 عدد المحصلين في المحافظ المصدر: **{total_source_col}**")
-                with c2:
-                    st.markdown("المحافظ الهدف (التوزيع عليها):")
-                    available_targets = [p for p in portfolios if p not in (source_ports or [])]
-                    target_ports = st.multiselect(
-                        label="اختر محفظة أو أكثر للتوزيع عليها:",
-                        options=available_targets,
-                        key="bal_target",
-                        label_visibility="collapsed"
-                    )
-                    if target_ports:
-                        total_target_col = sum(len(collector_map.get(p, [])) for p in target_ports)
-                        st.info(f"👥 عدد المحصلين في المحافظ الهدف: **{total_target_col}**")
+   # ─── واجهة سحب وتوزيع المحافظ ───
+balancing_params = {}
+source_ports: list = []
+target_ports: list = []
+if selected_key == "balancing" and uploaded_files.get("portfolio"):
+    portfolio_file = uploaded_files["portfolio"]
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".xlsx") as tmp_scan:
+        tmp_scan.write(portfolio_file.getbuffer())
+        tmp_scan_path = tmp_scan.name
+    try:
+        portfolios, collector_map = scan_portfolio_for_balancing(tmp_scan_path)
+        if portfolios:
+            st.markdown("#### ⚖️ تحديد المحافظ")
+            c1, c2 = st.columns(2)
+            with c1:
+                st.markdown("المحافظ المصدر (السحب منها):")
+                source_ports = st.multiselect(
+                    label="اختر محفظة أو أكثر لسحب عملائها:",
+                    options=portfolios,
+                    key="bal_source",
+                    label_visibility="collapsed"
+                )
                 if source_ports:
-                    if target_ports:
-                        overlap = set(source_ports) & set(target_ports)
-                        if overlap:
-                            st.error(f"⚠️ لا يمكن أن تكون المحفظة مصدراً وهدفاً في نفس الوقت: {', '.join(overlap)}")
-                        else:
-                            st.success(f"✅ سيتم سحب عملاء **{' | '.join(source_ports)}** وتوزيعهم على محصلي **{' | '.join(target_ports)}**.")
+                    total_source_col = sum(len(collector_map.get(p, [])) for p in source_ports)
+                    st.info(f"👥 عدد المحصلين في المحافظ المصدر: **{total_source_col}**")
+            with c2:
+                st.markdown("المحافظ الهدف (التوزيع عليها):")
+                available_targets = [p for p in portfolios if p not in (source_ports or [])]
+                target_ports = st.multiselect(
+                    label="اختر محفظة أو أكثر للتوزيع عليها:",
+                    options=available_targets,
+                    key="bal_target",
+                    label_visibility="collapsed"
+                )
+                if target_ports:
+                    total_target_col = sum(len(collector_map.get(p, [])) for p in target_ports)
+                    st.info(f"👥 عدد المحصلين في المحافظ الهدف: **{total_target_col}**")
+            if source_ports:
+                if target_ports:
+                    overlap = set(source_ports) & set(target_ports)
+                    if overlap:
+                        st.error(f"⚠️ لا يمكن أن تكون المحفظة مصدراً وهدفاً في نفس الوقت: {', '.join(overlap)}")
                     else:
-                        st.success(f"✅ سيتم سحب وتوزيع عملاء **{' | '.join(source_ports)}** بالتساوي داخل كل محفظة.")
-                    st.markdown("##### ⚙️ إعدادات التوزيع المتقدمة")
-                    min_chunk = st.number_input(
-                        "الحد الأدنى لعدد العملاء:",
-                        min_value=50, max_value=1000, value=150, step=10
-                    )
-                    balancing_params["source"] = source_ports
-                    balancing_params["target"] = target_ports if target_ports else None
-                    balancing_params["chunk"] = min_chunk
-        finally:
-            try:
-                os.unlink(tmp_scan_path)
-            except:
-                pass
-    # ─── واجهة مركز تقارير العمليات ───
-    ops_params = {}
-    if selected_key == "operations" and uploaded_files.get("portfolio"):
-        portfolio_file = uploaded_files["portfolio"]
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".xlsx") as tmp_scan:
-            tmp_scan.write(portfolio_file.getbuffer())
-            tmp_scan_path = tmp_scan.name
+                        st.success(f"✅ سيتم سحب عملاء **{' | '.join(source_ports)}** وتوزيعهم على محصلي **{' | '.join(target_ports)}**.")
+                else:
+                    st.success(f"✅ سيتم سحب وتوزيع عملاء **{' | '.join(source_ports)}** بالتساوي داخل كل محفظة.")
+                st.markdown("##### ⚙️ إعدادات التوزيع المتقدمة")
+                min_chunk = st.number_input(
+                    "الحد الأدنى لعدد العملاء:",
+                    min_value=50, max_value=1000, value=150, step=10
+                )
+                balancing_params["source"] = source_ports
+                balancing_params["target"] = target_ports if target_ports else None
+                balancing_params["chunk"] = min_chunk
+    finally:
         try:
-            filter_options = scan_portfolio_for_operations(tmp_scan_path)
-            if filter_options:
-                st.markdown("---")
-                st.markdown("### 🏢 Reports Center - مركز التقارير")
-                st.info("اختر نوع التقرير والفترة الزمنية والخيارات المطلوب استخراجها:")
-                col_mode, _ = st.columns([3, 1])
-                with col_mode:
-                    rep_type = st.radio(
-                        "اختر نوع التقرير المطلوب:",
-                        options=["📅 Daily Report (تقرير يومي)", "🗓 Weekly Report (تقرير أسبوعي)", "📆 Monthly Report (تقرير شهري)"],
-                        index=0,
-                        horizontal=True
+            os.unlink(tmp_scan_path)
+        except Exception:
+            pass
+   # ─── واجهة مركز تقارير العمليات ───
+ops_params = {}
+if selected_key == "operations" and uploaded_files.get("portfolio"):
+    portfolio_file = uploaded_files["portfolio"]
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".xlsx") as tmp_scan:
+        tmp_scan.write(portfolio_file.getbuffer())
+        tmp_scan_path = tmp_scan.name
+    try:
+        filter_options = scan_portfolio_for_operations(tmp_scan_path)
+        if filter_options:
+            st.markdown("---")
+            st.markdown("### 🏢 Reports Center - مركز التقارير")
+            st.info("اختر نوع التقرير والفترة الزمنية والخيارات المطلوب استخراجها:")
+            col_mode, _ = st.columns([3, 1])
+            with col_mode:
+                rep_type = st.radio(
+                    "اختر نوع التقرير المطلوب:",
+                    options=["📅 Daily Report (تقرير يومي)", "🗓 Weekly Report (تقرير أسبوعي)", "📆 Monthly Report (تقرير شهري)"],
+                    index=0,
+                    horizontal=True
+                )
+            st.markdown("##### ⏱️ إعدادات الفترة الزمنية")
+            if "Daily" in rep_type:
+                ops_params["report_mode"] = "daily"
+                d_val = st.date_input("تاريخ التقرير اليومي:", datetime.today())
+                ops_params["target_date"] = d_val.strftime("%Y-%m-%d")
+            elif "Weekly" in rep_type:
+                ops_params["report_mode"] = "weekly"
+                w_cols = st.columns(2)
+                with w_cols[0]:
+                    s_val = st.date_input("تاريخ البداية:", datetime.today() - timedelta(days=6))
+                with w_cols[1]:
+                    e_val = st.date_input("تاريخ النهاية:", datetime.today())
+                ops_params["start_date"] = s_val.strftime("%Y-%m-%d")
+                ops_params["end_date"] = e_val.strftime("%Y-%m-%d")
+            elif "Monthly" in rep_type:
+                ops_params["report_mode"] = "monthly"
+                m_cols = st.columns(2)
+                curr_y = datetime.today().year
+                curr_m = datetime.today().month
+                with m_cols[0]:
+                    m_val = st.selectbox("الشهر:", options=list(range(1, 13)), index=curr_m - 1)
+                with m_cols[1]:
+                    y_val = st.selectbox(
+                        "السنة:",
+                        options=list(range(2023, 2031)),
+                        index=list(range(2023, 2031)).index(curr_y) if curr_y in range(2023, 2031) else 0
                     )
-                st.markdown("##### ⏱️ إعدادات الفترة الزمنية")
-                if "Daily" in rep_type:
-                    ops_params["report_mode"] = "daily"
-                    d_val = st.date_input("تاريخ التقرير اليومي:", datetime.today())
-                    ops_params["target_date"] = d_val.strftime("%Y-%m-%d")
-                elif "Weekly" in rep_type:
-                    ops_params["report_mode"] = "weekly"
-                    w_cols = st.columns(2)
-                    with w_cols[0]:
-                        s_val = st.date_input("تاريخ البداية:", datetime.today() - timedelta(days=6))
-                    with w_cols[1]:
-                        e_val = st.date_input("تاريخ النهاية:", datetime.today())
-                    ops_params["start_date"] = s_val.strftime("%Y-%m-%d")
-                    ops_params["end_date"] = e_val.strftime("%Y-%m-%d")
-                elif "Monthly" in rep_type:
-                    ops_params["report_mode"] = "monthly"
-                    m_cols = st.columns(2)
-                    curr_y = datetime.today().year
-                    curr_m = datetime.today().month
-                    with m_cols[0]:
-                        m_val = st.selectbox("الشهر:", options=list(range(1, 13)), index=curr_m - 1)
-                    with m_cols[1]:
-                        y_val = st.selectbox("السنة:", options=list(range(2023, 2031)),
-                                             index=list(range(2023, 2031)).index(curr_y) if curr_y in range(2023, 2031) else 0)
-                    ops_params["month"] = m_val
-                    ops_params["year"] = y_val
-                st.markdown("##### 🔍 فلاتر مخصصة (اختياري)")
-                f_col1, f_col2, f_col3 = st.columns(3)
-                with f_col1:
-                    sups_sel = st.multiselect("المشرفين:", filter_options.get("supervisors", []))
-                    cols_sel = st.multiselect("المحصلين:", filter_options.get("collectors", []))
-                with f_col2:
-                    ports_sel = st.multiselect("المحافظ:", filter_options.get("portfolios", []))
-                    mstat_sel = st.multiselect("الحالة الرئيسية:", filter_options.get("main_statuses", []))
-                with f_col3:
-                    sstat_sel = st.multiselect("الحالة الفرعية:", filter_options.get("sub_statuses", []))
-                ops_params["supervisors"] = sups_sel if sups_sel else None
-                ops_params["collectors"] = cols_sel if cols_sel else None
-                ops_params["portfolios"] = ports_sel if ports_sel else None
-                ops_params["main_statuses"] = mstat_sel if mstat_sel else None
-                ops_params["sub_statuses"] = sstat_sel if sstat_sel else None
-        finally:
-            try:
-                os.unlink(tmp_scan_path)
-            except:
-                pass
-    # ─── التحقق من الجاهزية ───
-    ready_to_run = True
-    for fspec in module_info["files"]:
-        if fspec["required"] and not uploaded_files.get(fspec["key"]):
-            ready_to_run = False
-    if selected_key == "rotation" and not rotation_params:
-        ready_to_run = False
-    if selected_key == "balancing" and not balancing_params:
-        ready_to_run = False
-    if selected_key == "operations" and not ops_params:
-        ready_to_run = False
-    # ─── زر التشغيل ───
-    st.markdown("<div class='purple-divider'></div>", unsafe_allow_html=True)
-    if st.button("🚀 تشغيل التحليل والمعالجة", disabled=not ready_to_run, use_container_width=True):
-        temp_files = []
-        path_map = {}
+                ops_params["month"] = m_val
+                ops_params["year"] = y_val
+            st.markdown("##### 🔍 فلاتر مخصصة (اختياري)")
+            f_col1, f_col2, f_col3 = st.columns(3)
+            with f_col1:
+                sups_sel = st.multiselect("المشرفين:", filter_options.get("supervisors", []))
+                cols_sel = st.multiselect("المحصلين:", filter_options.get("collectors", []))
+            with f_col2:
+                ports_sel = st.multiselect("المحافظ:", filter_options.get("portfolios", []))
+                mstat_sel = st.multiselect("الحالة الرئيسية:", filter_options.get("main_statuses", []))
+            with f_col3:
+                sstat_sel = st.multiselect("الحالة الفرعية:", filter_options.get("sub_statuses", []))
+            ops_params["supervisors"] = sups_sel if sups_sel else None
+            ops_params["collectors"] = cols_sel if cols_sel else None
+            ops_params["portfolios"] = ports_sel if ports_sel else None
+            ops_params["main_statuses"] = mstat_sel if mstat_sel else None
+            ops_params["sub_statuses"] = sstat_sel if sstat_sel else None
+    finally:
         try:
-            with st.spinner("⏳ جاري قراءة وتجهيز الملفات..."):
-                for key, file_obj in uploaded_files.items():
-                    if file_obj:
-                        suffix = os.path.splitext(file_obj.name)[1] or ".xlsx"
-                        with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
-                            tmp.write(file_obj.getbuffer())
-                            tmp_path = tmp.name
-                            temp_files.append(tmp_path)
-                            if key == "portfolio":
-                                path_map[MAIN_PORTFOLIO] = tmp_path
-                            elif key == "promise":
-                                path_map[PROMISE_PAY] = tmp_path
-                            elif key == "payments":
-                                path_map["payments"] = tmp_path
-                dfs, results = load_files(path_map)
-                for k, vr in results.items():
-                    if not vr.is_valid:
-                        st.error(f"❌ الملف {k} غير صالح: {vr.summary()}")
-                        st.stop()
-                portfolio = dfs.get(MAIN_PORTFOLIO)
-                promise = dfs.get(PROMISE_PAY, pl.DataFrame())
-            with st.spinner("⚙️ جاري معالجة البيانات وتطبيق القواعد الحسابية..."):
-                task_id = module_info["id"]
-                stats = {}
-                out_fd, out_path = tempfile.mkstemp(suffix=".xlsx")
-                os.close(out_fd)
-                temp_files.append(out_path)
-                writer = ExcelReportWriter(out_path)
-                if task_id == 1:
-                    from modules.module1_errors import SystemErrorsModule
-                    r = SystemErrorsModule().run(portfolio, promise)
-                    stats.update(r["stats"])
-                    writer.write_errors(r["data"])
-                elif task_id == 2:
-                    from modules.module2_contact import ContactStatusModule
-                    r = ContactStatusModule().run(portfolio)
-                    stats.update(r["stats"])
-                    writer.write_contact(r["data"], r["pivot_supervisor"], r["pivot_collector"], r["pivot_status"])
-                elif task_id == 3:
-                    from modules.module3_neglect import NeglectModule
-                    r = NeglectModule().run(portfolio)
-                    stats.update(r["stats"])
-                    writer.write_neglect(r["data"], r["full_analysis"], r["pivot_summary"],
-                                         r["pivot_supervisor"], r["pivot_collector"], r["pivot_status"],
-                                         r["pivot_branch"], r["pivot_portfolio"], r["pivot_days"])
-                elif task_id == 7:
-                    from modules.module7_targets import TargetCustomersModule
-                    r = TargetCustomersModule().run(portfolio, promise, pl.DataFrame())
-                    stats.update(r["stats"])
-                    writer.write_targets(r["data"], r["pivot_supervisor"])
-                elif task_id == 6:
-                    sup = rotation_params["supervisor"]
-                    col = rotation_params["collector"]
-                    from modules.module6b_rotation import PortfolioRotationModule
-                    r = PortfolioRotationModule().run(portfolio, col, sup)
-                    stats.update(r["stats"])
-                    writer.write_rotation(r["data"], r["execution_report"],
-                                          r["distribution_summary"], r["withdrawal_summary"])
-                elif task_id == 8:
-                    from modules.module8_balancing import PortfolioBalancingModule
-                    tgt = balancing_params.get("target") or None
-                    r = PortfolioBalancingModule().run(
-                        portfolio,
-                        source_portfolios=balancing_params["source"],
-                        target_portfolios=tgt,
-                        min_receiver_chunk=balancing_params.get("chunk", 200)
-                    )
-                    stats.update(r["stats"])
-                    writer.write_balancing(r["data"], r["summary_pivot"],
-                                           r.get("planning_sheet"), r.get("source_summary"),
-                                           r.get("final_result_sheet"))
-                elif task_id == 9:
-                    from modules.module9_operations_report import OperationsReportModule
-                    pmt_df = dfs.get("payments")
-                    r = OperationsReportModule().run(
-                        portfolio,
-                        payments=pmt_df,
-                        report_mode=ops_params.get("report_mode", "daily"),
-                        target_date=ops_params.get("target_date"),
-                        start_date=ops_params.get("start_date"),
-                        end_date=ops_params.get("end_date"),
-                        month=ops_params.get("month"),
-                        year=ops_params.get("year"),
-                        supervisors=ops_params.get("supervisors"),
-                        collectors=ops_params.get("collectors"),
-                        portfolios=ops_params.get("portfolios"),
-                        main_statuses=ops_params.get("main_statuses"),
-                        sub_statuses=ops_params.get("sub_statuses"),
-                    )
-                    stats.update(r["stats"])
-                    writer.write_operations_report(
-                        r["data"], r["pivot_supervisor"], r["pivot_collector"],
-                        r["pivot_portfolio"], r.get("pivot_main_status"), r.get("pivot_sub_status"),
-                        r.get("top10_supervisors"), r.get("top10_collectors"),
-                        r.get("top10_portfolios"), r["stats"],
-                    )
-                writer.write_dashboard(stats, task_id)
-                writer.write_summary(stats)
-                writer.save()
-            st.balloons()
-            st.success("✨ اكتملت معالجة البيانات بنجاح وتم إنشاء التقرير المنسق!")
-            # ─── عرض الإحصائيات ───
-            st.markdown("#### 📊 ملخص نتائج التقرير")
-            stats_cols = st.columns(min(len(stats), 4))
-            for j, (k, v) in enumerate(stats.items()):
-                col_idx = j % len(stats_cols)
-                with stats_cols[col_idx]:
-                    st.metric(label=k, value=str(v))
-            # جدول توزيع المحصلين
-            if task_id == 8 and 'r' in locals() and "summary_pivot" in r:
-                st.markdown("---")
-                st.markdown("#### 📋 جدول ملخص التوزيع النهائي للمحصلين")
-                summary_df = r["summary_pivot"]
-                target_cols = ["المحصل", "المحصل الجديد", "اليوزر", "عدد العملاء بعد", "عدد العملاء", "إجمالي متبقي السداد"]
-                cols_to_show = [c for c in target_cols if c in summary_df.columns]
-                if cols_to_show:
-                    show_df = summary_df.select(cols_to_show)
-                    first_col = cols_to_show[0]
-                    show_df = show_df.filter(~pl.col(first_col).cast(pl.String).str.contains("📉|📈"))
-                    st.dataframe(show_df.to_pandas(), use_container_width=True, hide_index=True)
-            # ─── زر التحميل ───
+            os.unlink(tmp_scan_path)
+        except Exception:
+            pass
+   # ─── التحقق من الجاهزية ───
+ready_to_run = True
+for fspec in module_info["files"]:
+    if fspec["required"] and not uploaded_files.get(fspec["key"]):
+        ready_to_run = False
+
+if selected_key == "rotation" and not rotation_params:
+    ready_to_run = False
+if selected_key == "balancing" and not balancing_params:
+    ready_to_run = False
+if selected_key == "operations" and not ops_params:
+    ready_to_run = False
+
+# ─── زر التشغيل ───
+st.markdown("<div class='purple-divider'></div>", unsafe_allow_html=True)
+if st.button("🚀 تشغيل التحليل والمعالجة", disabled=not ready_to_run, use_container_width=True):
+    temp_files = []
+    path_map = {}
+    try:
+        with st.spinner("⏳ جاري قراءة وتجهيز الملفات..."):
+            for key, file_obj in uploaded_files.items():
+                if file_obj:
+                    suffix = os.path.splitext(file_obj.name)[1] or ".xlsx"
+                    with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
+                        tmp.write(file_obj.getbuffer())
+                        tmp_path = tmp.name
+                        temp_files.append(tmp_path)
+                        if key == "portfolio":
+                            path_map[MAIN_PORTFOLIO] = tmp_path
+                        elif key == "promise":
+                            path_map[PROMISE_PAY] = tmp_path
+                        elif key == "payments":
+                            path_map["payments"] = tmp_path
+
+            dfs, results = load_files(path_map)
+            for k, vr in results.items():
+                if not vr.is_valid:
+                    st.error(f"❌ الملف {k} غير صالح: {vr.summary()}")
+                    st.stop()
+
+            portfolio = dfs.get(MAIN_PORTFOLIO)
+            promise = dfs.get(PROMISE_PAY, pl.DataFrame())
+
+        with st.spinner("⚙️ جاري معالجة البيانات وتطبيق القواعد الحسابية..."):
+            task_id = module_info["id"]
+            stats = {}
+            out_fd, out_path = tempfile.mkstemp(suffix=".xlsx")
+            os.close(out_fd)
+            temp_files.append(out_path)
+            writer = ExcelReportWriter(out_path)
+
+            if task_id == 1:
+                from modules.module1_errors import SystemErrorsModule
+                r = SystemErrorsModule().run(portfolio, promise)
+                stats.update(r["stats"])
+                writer.write_errors(r["data"])
+
+            elif task_id == 2:
+                from modules.module2_contact import ContactStatusModule
+                r = ContactStatusModule().run(portfolio)
+                stats.update(r["stats"])
+                writer.write_contact(r["data"], r["pivot_supervisor"], r["pivot_collector"], r["pivot_status"])
+
+            elif task_id == 3:
+                from modules.module3_neglect import NeglectModule
+                r = NeglectModule().run(portfolio)
+                stats.update(r["stats"])
+                writer.write_neglect(
+                    r["data"], r["full_analysis"], r["pivot_summary"],
+                    r["pivot_supervisor"], r["pivot_collector"], r["pivot_status"],
+                    r["pivot_branch"], r["pivot_portfolio"], r["pivot_days"]
+                )
+
+            elif task_id == 7:
+                from modules.module7_targets import TargetCustomersModule
+                r = TargetCustomersModule().run(portfolio, promise, pl.DataFrame())
+                stats.update(r["stats"])
+                writer.write_targets(r["data"], r["pivot_supervisor"])
+
+            elif task_id == 6:
+                sup = rotation_params["supervisor"]
+                col = rotation_params["collector"]
+                from modules.module6b_rotation import PortfolioRotationModule
+                r = PortfolioRotationModule().run(portfolio, col, sup)
+                stats.update(r["stats"])
+                writer.write_rotation(
+                    r["data"], r["execution_report"],
+                    r["distribution_summary"], r["withdrawal_summary"]
+                )
+
+            elif task_id == 8:
+                from modules.module8_balancing import PortfolioBalancingModule
+                tgt = balancing_params.get("target") or None
+                r = PortfolioBalancingModule().run(
+                    portfolio,
+                    source_portfolios=balancing_params["source"],
+                    target_portfolios=tgt,
+                    min_receiver_chunk=balancing_params.get("chunk", 200)
+                )
+                stats.update(r["stats"])
+                writer.write_balancing(
+                    r["data"], r["summary_pivot"],
+                    r.get("planning_sheet"), r.get("source_summary"),
+                    r.get("final_result_sheet")
+                )
+
+            elif task_id == 9:
+                from modules.module9_operations_report import OperationsReportModule
+                pmt_df = dfs.get("payments")
+                r = OperationsReportModule().run(
+                    portfolio,
+                    payments=pmt_df,
+                    report_mode=ops_params.get("report_mode", "daily"),
+                    target_date=ops_params.get("target_date"),
+                    start_date=ops_params.get("start_date"),
+                    end_date=ops_params.get("end_date"),
+                    month=ops_params.get("month"),
+                    year=ops_params.get("year"),
+                    supervisors=ops_params.get("supervisors"),
+                    collectors=ops_params.get("collectors"),
+                    portfolios=ops_params.get("portfolios"),
+                    main_statuses=ops_params.get("main_statuses"),
+                    sub_statuses=ops_params.get("sub_statuses"),
+                )
+                stats.update(r["stats"])
+                writer.write_operations_report(
+                    r["data"], r["pivot_supervisor"], r["pivot_collector"],
+                    r["pivot_portfolio"], r.get("pivot_main_status"), r.get("pivot_sub_status"),
+                    r.get("top10_supervisors"), r.get("top10_collectors"),
+                    r.get("top10_portfolios"), r["stats"],
+                )
+
+            writer.write_dashboard(stats, task_id)
+            writer.write_summary(stats)
+            writer.save()
+
+        st.balloons()
+        st.success("✨ اكتملت معالجة البيانات بنجاح وتم إنشاء التقرير المنسق!")
+
+        # ─── عرض الإحصائيات ───
+        st.markdown("#### 📊 ملخص نتائج التقرير")
+        stats_cols = st.columns(min(len(stats), 4))
+        for j, (k, v) in enumerate(stats.items()):
+            col_idx = j % len(stats_cols)
+            with stats_cols[col_idx]:
+                st.metric(label=k, value=str(v))
+
+        # جدول توزيع المحصلين
+        if task_id == 8 and 'r' in locals() and "summary_pivot" in r:
+            st.markdown("---")
+            st.markdown("#### 📋 جدول ملخص التوزيع النهائي للمحصلين")
+            summary_df = r["summary_pivot"]
+            target_cols = ["المحصل", "المحصل الجديد", "اليوزر", "عدد العملاء بعد", "عدد العملاء", "إجمالي متبقي السداد"]
+            cols_to_show = [c for c in target_cols if c in summary_df.columns]
+            if cols_to_show:
+                show_df = summary_df.select(cols_to_show)
+                first_col = cols_to_show[0]
+                show_df = show_df.filter(~pl.col(first_col).cast(pl.String).str.contains("📉|📈"))
+                st.dataframe(show_df.to_pandas(), use_container_width=True, hide_index=True)
+
+    finally:
+        # يمكنك هنا إضافة تنظيف الملفات المؤقتة temp_files إذا لزم الأمر
+        pass
+           # ─── زر التحميل ───
             with open(out_path, "rb") as f_out:
                 excel_bytes = f_out.read()
             ts_str = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -1029,12 +1062,12 @@ else:
                 mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                 use_container_width=True
             )
-        except Exception as e:
-            st.exception(e)
-            st.error(f"❌ حدث خطأ أثناء تشغيل النظام: {e}")
-        finally:
-            for p in temp_files:
-                try:
-                    os.unlink(p)
-                except:
-                    pass
+    except Exception as e:
+        st.exception(e)
+        st.error(f"❌ حدث خطأ أثناء تشغيل النظام: {e}")
+    finally:
+        for p in temp_files:
+            try:
+                os.unlink(p)
+            except Exception:
+                pass
