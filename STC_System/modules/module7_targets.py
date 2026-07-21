@@ -3,11 +3,11 @@ modules/module7_targets.py
 ──────────────────────────
 Module 7 — العملاء المستهدفة (Target Customers) using Polars.
 
-STRICT TWO-STEP PROCESS:
-STEP 1: Strictly filter rows by "الحالة الرئيسية" and "الحالة الفرعية" FIRST.
-        Rows that do not match are completely ignored and dropped before reading "المتابعة".
-STEP 2: For the matching rows only, scan "المتابعة" for positive keywords 
-        while prioritizing negative exclusions (like "ما بسدد", "سحب", etc.).
+EXACT STATUS MATCHING:
+Step 1: STRICT FILTERING on Main & Sub Statuses ONLY:
+        - Main Status MUST BE EXACTLY: ("سداد جزئي", "واعد بالسداد", "متابعة" / "متابعه")
+        - OR Main Status = "متوفي" AND Sub Status contains "واعد" (e.g., "الوارثين واعدين").
+Step 2: Follow-up scan for matched records ONLY.
 """
 from __future__ import annotations
 
@@ -92,8 +92,8 @@ class TargetCustomersModule:
     ) -> Dict[str, Any]:
         _log.info("▶ بدء تحديد العملاء المستهدفة")
 
-        # ── الخطوة الأولى: الفلترة الصارمة بحسب الحالة الرئيسية والفرعية ────────
-        filtered_portfolio = self._step1_filter_by_status(portfolio)
+        # ── الخطوة الأولى: الفلترة الصارمة بالأسماء المحددة للحالة ────────────────
+        filtered_portfolio = self._step1_filter_by_exact_status(portfolio)
 
         if filtered_portfolio.is_empty():
             _log.warning("لا توجد سجلات تطابق شروط الحالة الرئيسية والفرعية!")
@@ -120,7 +120,7 @@ class TargetCustomersModule:
         else:
             filtered_portfolio = filtered_portfolio.with_columns(pl.lit(1.0).alias("عدد العملاء"))
 
-        # ── الخطوة الثانية: فحص عمود المتابعة للسجلات المقبولة فقط ─────────────
+        # ── الخطوة الثانية: فحص المتابعة للسجلات التي تطابقت أسماؤها فقط ─────────
         df = self._step2_classify_notes(filtered_portfolio.clone())
 
         positive_df = df.filter(pl.col(self.CLASS_COL) == POSITIVE)
@@ -157,7 +157,7 @@ class TargetCustomersModule:
 
     @staticmethod
     def _normalize_text_str(s: str) -> str:
-        """توحيد الأحرف للنصوص الثابتة والقواميس."""
+        """توحيد الأحرف للنصوص الثابتة."""
         return (
             s.replace("أ", "ا")
             .replace("إ", "ا")
@@ -183,12 +183,11 @@ class TargetCustomersModule:
             .str.replace_all("ى", "ي")
         )
 
-    def _step1_filter_by_status(self, df: pl.DataFrame) -> pl.DataFrame:
+    def _step1_filter_by_exact_status(self, df: pl.DataFrame) -> pl.DataFrame:
         """
-        [المرحلة الأولى]: الفلترة المبدئية قبل النظر في المتابعة إطلاقاً.
-        تُبقي فقط الصفوف التي تحقق:
-        1. الحالة الرئيسية = (سداد جزئي OR واعد بالسداد OR متابعة)
-        2. OR (الحالة الرئيسية = متوفي AND الحالة الفرعية تحتوي على 'واعد')
+        [المرحلة الأولى]: الفلترة المبدئية بالمطابقة الصريحة للأسماء:
+        1. الحالة الرئيسية = ("سداد جزئي", "واعد بالسداد", "متابعه")
+        2. OR (الحالة الرئيسية = "متوفي" AND الحالة الفرعية تحتوي على "واعد" - مثل "الوارثين واعدين")
         """
         main_col = next((c for c in ["الحالة الرئيسية", "الحالة"] if c in df.columns), None)
         sub_col  = next((c for c in ["الحالة الفرعية"] if c in df.columns), None)
@@ -200,19 +199,22 @@ class TargetCustomersModule:
         main_expr = self._normalize_text(main_col)
         sub_expr  = self._normalize_text(sub_col) if sub_col else pl.lit("")
 
-        # 1. الحالات الرئيسية المسموح بها فقط
-        allowed_main = main_expr.str.contains("سداد جزئي|واعد بالسداد|متابعه|متابعة")
+        # المطابقة بالاسم الصريح الموحد
+        ALLOWED_EXACT_MAIN = ["سداد جزئي", "واعد بالسداد", "متابعه"]
 
-        # 2. استثناء المتوفي: يجب أن تكون الحالة الفرعية واعدين
-        is_deceased_promised = (main_expr.str.contains("متوفي")) & (sub_expr.str.contains("واعد"))
+        # 1. مطابقة صريحة للثلاث حالات
+        exact_main_match = main_expr.is_in(ALLOWED_EXACT_MAIN)
 
-        filtered_df = df.filter(allowed_main | is_deceased_promised)
-        _log.info(f"إجمالي الملف: {len(df)} | المقبول بعد فلترة الحالة (قبل المتابعة): {len(filtered_df)}")
+        # 2. حالة المتوفي المحددة بشرط أن تكون الحالة الفرعية بها "واعد" (كالوارثين واعدين)
+        deceased_match = (main_expr == "متوفي") & (sub_expr.str.contains("واعد"))
+
+        filtered_df = df.filter(exact_main_match | deceased_match)
+        _log.info(f"إجمالي الملف: {len(df)} | المطابق تماماً للحالات (قبل المتابعة): {len(filtered_df)}")
         return filtered_df
 
     def _step2_classify_notes(self, df: pl.DataFrame) -> pl.DataFrame:
         """
-        [المرحلة الثانية]: فحص عمود 'المتابعة' فقط للصفوف التي اجتازت المرحلة الأولى.
+        [المرحلة الثانية]: فحص عمود 'المتابعة' فقط للصفوف المقبولة في المرحلة الأولى.
         """
         note_col = next((c for c in ["المتابعة", "الملاحظة", "الملاحظات", "ملاحظة"] if c in df.columns), None)
 
