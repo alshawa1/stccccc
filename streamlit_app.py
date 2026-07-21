@@ -619,7 +619,7 @@ if selected_key == "ai_copilot":
                     </div>
                     """, unsafe_allow_html=True)
         # حقل الإدخال
-        # حقل الإدخال
+     # حقل الإدخال
 col_q, col_send = st.columns([5, 1])
 
 with col_q:
@@ -676,9 +676,7 @@ if send_btn and user_question.strip():
     st.session_state.ai_question = ""
 
     st.rerun()
-    # إعادة تحميل الصفحة لإظهار الرد
-    st.rerun()
-    else:
+else:
         st.markdown("""
         <div style="
             text-align:center;
