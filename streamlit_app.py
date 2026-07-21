@@ -4,17 +4,14 @@ import tempfile
 from datetime import datetime, timedelta
 import polars as pl
 import streamlit as st
-
 # ─── إعداد مسار المشروع ───
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 STC_DIR = os.path.join(THIS_DIR, "STC_System")
 if STC_DIR not in sys.path:
     sys.path.insert(0, STC_DIR)
-
 from core.data_loader import load_files
 from core.utils import MAIN_PORTFOLIO, PROMISE_PAY, MAHARAH_PAY, COMPANY_PAY
 from export.excel_writer_xl import ExcelReportWriter
-
 # ─── إعدادات الصفحة ───
 st.set_page_config(
     page_title="STC Operations AI Copilot",
@@ -22,14 +19,12 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded"
 )
-
 # ════════════════════════════════════════════════════════════════════
 #  CSS احترافي - هوية STC بالألوان الأرجوانية والتصميم الداكن
 # ════════════════════════════════════════════════════════════════════
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap');
-
     /* ─── القواعد العامة ─── */
     html, body, [class*="css"], .stApp {
         font-family: 'Cairo', 'Segoe UI', sans-serif !important;
@@ -38,12 +33,10 @@ st.markdown("""
         background-color: #0d0e1a !important;
         color: #e2e8f0 !important;
     }
-
     /* ─── خلفية متدرجة للتطبيق ─── */
     .stApp {
         background: radial-gradient(ellipse at top left, #1a0a2e 0%, #0d0e1a 60%) !important;
     }
-
     /* ─── الشريط الجانبي ─── */
     [data-testid="stSidebar"] {
         background: linear-gradient(180deg, #130b2b 0%, #0d0e1a 100%) !important;
@@ -53,7 +46,6 @@ st.markdown("""
         direction: RTL;
         text-align: right;
     }
-
     /* ─── شريط التنقل في Sidebar ─── */
     .stRadio > div {
         direction: RTL;
@@ -69,7 +61,6 @@ st.markdown("""
     .stRadio > div > label:hover {
         background: rgba(79, 45, 127, 0.2) !important;
     }
-
     /* ─── الكروت والمناطق ─── */
     [data-testid="metric-container"] {
         background: rgba(79, 45, 127, 0.12) !important;
@@ -92,7 +83,6 @@ st.markdown("""
         color: #a78bfa !important;
         font-size: 13px;
     }
-
     /* ─── أزرار ─── */
     .stButton > button {
         background: linear-gradient(135deg, #4f2d7f 0%, #7c3aed 100%) !important;
@@ -112,7 +102,6 @@ st.markdown("""
     .stButton > button:active {
         transform: translateY(0px) !important;
     }
-
     /* ─── زر التحميل ─── */
     .stDownloadButton > button {
         background: linear-gradient(135deg, #065f46 0%, #059669 100%) !important;
@@ -128,7 +117,6 @@ st.markdown("""
         transform: translateY(-2px) !important;
         box-shadow: 0 8px 25px rgba(5, 150, 105, 0.5) !important;
     }
-
     /* ─── حقل الإدخال والقوائم ─── */
     .stTextInput input, .stSelectbox select, .stMultiSelect,
     [data-testid="stTextInput"] input {
@@ -142,12 +130,10 @@ st.markdown("""
         border-color: #7c3aed !important;
         box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.2) !important;
     }
-
     /* ─── الخطوط الفاصلة ─── */
     hr {
         border-color: rgba(79, 45, 127, 0.3) !important;
     }
-
     /* ─── رسائل النجاح والخطأ ─── */
     .stSuccess {
         background: rgba(5, 150, 105, 0.1) !important;
@@ -169,7 +155,6 @@ st.markdown("""
         border: 1px solid rgba(217, 119, 6, 0.3) !important;
         border-radius: 10px;
     }
-
     /* ─── حاوية الدردشة مع الـ AI ─── */
     .chat-bubble-user {
         background: rgba(79, 45, 127, 0.25);
@@ -197,7 +182,6 @@ st.markdown("""
         display: inline-flex; align-items: center; justify-content: center;
         font-size: 12px; margin-left: 8px;
     }
-
     /* ─── عنوان بطاقة الـ AI ─── */
     .ai-header-card {
         background: linear-gradient(135deg, rgba(79,45,127,0.3) 0%, rgba(124,58,237,0.15) 100%);
@@ -207,7 +191,6 @@ st.markdown("""
         margin-bottom: 16px;
         direction: RTL;
     }
-
     /* ─── شاشة كلمة المرور ─── */
     .login-card {
         background: linear-gradient(135deg, rgba(79,45,127,0.25) 0%, rgba(30,10,60,0.8) 100%);
@@ -220,7 +203,6 @@ st.markdown("""
         direction: RTL;
         text-align: center;
     }
-
     /* ─── عنوان STC ─── */
     .stc-logo-text {
         font-size: 52px;
@@ -237,7 +219,6 @@ st.markdown("""
         font-size: 15px;
         margin-top: 4px;
     }
-
     /* ─── شريط الفصل الأرجواني ─── */
     .purple-divider {
         height: 3px;
@@ -245,7 +226,6 @@ st.markdown("""
         border-radius: 3px;
         margin: 12px 0;
     }
-
     /* ─── Spinner Shimmer ─── */
     @keyframes shimmer {
         0% { background-position: -200% center; }
@@ -258,14 +238,12 @@ st.markdown("""
         -webkit-text-fill-color: transparent;
         animation: shimmer 2s linear infinite;
     }
-
     /* ─── DataFrames ─── */
     [data-testid="stDataFrame"] {
         border-radius: 12px;
         overflow: hidden;
         border: 1px solid rgba(79, 45, 127, 0.3);
     }
-
     /* ─── File Uploader ─── */
     [data-testid="stFileUploader"] {
         background: rgba(79, 45, 127, 0.08) !important;
@@ -278,7 +256,6 @@ st.markdown("""
         border-color: rgba(124, 58, 237, 0.7) !important;
         background: rgba(79, 45, 127, 0.14) !important;
     }
-
     /* ─── RTL كامل ─── */
     .stMarkdown, .stSelectbox, .stFileUploader, .stButton,
     .stMultiSelect, .stDateInput, .stTextArea, p, label {
@@ -287,14 +264,11 @@ st.markdown("""
     }
     </style>
 """, unsafe_allow_html=True)
-
-
 # ════════════════════════════════════════════════════════════════════
 #  🔒 بوابة كلمة المرور
 # ════════════════════════════════════════════════════════════════════
 if "authenticated" not in st.session_state:
     st.session_state.authenticated = False
-
 if not st.session_state.authenticated:
     col_l, col_c, col_r = st.columns([1, 1.4, 1])
     with col_c:
@@ -308,7 +282,6 @@ if not st.session_state.authenticated:
             </p>
         </div>
         """, unsafe_allow_html=True)
-
         pwd_input = st.text_input(
             "كلمة المرور",
             type="password",
@@ -317,7 +290,6 @@ if not st.session_state.authenticated:
             label_visibility="collapsed"
         )
         login_btn = st.button("🔓 دخول", use_container_width=True)
-
         if login_btn or (pwd_input and pwd_input == "333"):
             if pwd_input == "333":
                 st.session_state.authenticated = True
@@ -325,8 +297,6 @@ if not st.session_state.authenticated:
             else:
                 st.error("❌ كلمة المرور غير صحيحة. حاول مرة أخرى.")
     st.stop()
-
-
 # ════════════════════════════════════════════════════════════════════
 #  تعريف الموديولات
 # ════════════════════════════════════════════════════════════════════
@@ -399,8 +369,6 @@ MODULES = {
         ]
     }
 }
-
-
 # ════════════════════════════════════════════════════════════════════
 #  دوال مساعدة
 # ════════════════════════════════════════════════════════════════════
@@ -429,8 +397,6 @@ def read_excel_calamine(file_path: str) -> pl.DataFrame:
         for row in records
     ]
     return pl.DataFrame(str_records, schema=headers, orient="row")
-
-
 @st.cache_data
 def scan_portfolio_for_balancing(file_path):
     try:
@@ -442,8 +408,6 @@ def scan_portfolio_for_balancing(file_path):
     except Exception as e:
         st.error(f"حدث خطأ أثناء فحص الملف: {e}")
         return [], {}
-
-
 @st.cache_data
 def scan_portfolio_for_operations(file_path):
     try:
@@ -453,8 +417,6 @@ def scan_portfolio_for_operations(file_path):
     except Exception as e:
         st.error(f"حدث خطأ أثناء فحص ملف العمليات: {e}")
         return {}
-
-
 @st.cache_data
 def scan_portfolio_for_rotation(file_path):
     try:
@@ -468,14 +430,10 @@ def scan_portfolio_for_rotation(file_path):
     except Exception as e:
         st.error(f"حدث خطأ أثناء فحص الملف: {e}")
         return None
-
-
 @st.cache_data
 def load_portfolio_df(file_path):
     """تحميل إطار البيانات من ملف المحفظة"""
     return read_excel_calamine(file_path)
-
-
 def detect_supervisor_column(df: pl.DataFrame) -> str | None:
     """اكتشاف عمود المشرف تلقائياً"""
     candidates = ["اسم المشرف", "المشرف", "مشرف", "Supervisor", "supervisor"]
@@ -487,8 +445,6 @@ def detect_supervisor_column(df: pl.DataFrame) -> str | None:
         if "مشرف" in col or "supervisor" in col.lower():
             return col
     return None
-
-
 # ════════════════════════════════════════════════════════════════════
 #  الشريط الجانبي - STC Header + Navigation
 # ════════════════════════════════════════════════════════════════════
@@ -501,18 +457,14 @@ with st.sidebar:
         <div class="purple-divider"></div>
     </div>
     """, unsafe_allow_html=True)
-
     st.markdown("<p style='color:#a78bfa; font-size:13px; text-align:center; margin-bottom:12px;'>⚙️ البرامج المتاحة</p>", unsafe_allow_html=True)
-
     selected_key = st.radio(
         label="اختر البرنامج:",
         options=list(MODULES.keys()),
         format_func=lambda k: MODULES[k]["name"],
         label_visibility="collapsed"
     )
-
     st.markdown("<div class='purple-divider'></div>", unsafe_allow_html=True)
-
     # زر تسجيل الخروج
     if st.button("🔒 تسجيل الخروج", use_container_width=True):
         st.session_state.authenticated = False
@@ -521,19 +473,15 @@ with st.sidebar:
         st.session_state.pop("chat_history", None)
         st.session_state.pop("ai_supervisors", None)
         st.rerun()
-
     st.markdown("""
     <div style='text-align:center; margin-top:20px; color:#475569; font-size:11px;'>
         STC Operations © 2026<br>جميع الحقوق محفوظة
     </div>
     """, unsafe_allow_html=True)
-
-
 # ════════════════════════════════════════════════════════════════════
 #  الرأس الرئيسي للصفحة
 # ════════════════════════════════════════════════════════════════════
 module_info = MODULES[selected_key]
-
 # Header بطاقة عليا
 if selected_key == "ai_copilot":
     st.markdown("""
@@ -560,13 +508,10 @@ else:
     </div>
     """, unsafe_allow_html=True)
     st.info(module_info["desc"])
-
-
 # ════════════════════════════════════════════════════════════════════
 #  🤖 واجهة AI Operations Copilot
 # ════════════════════════════════════════════════════════════════════
 if selected_key == "ai_copilot":
-
     # تهيئة الحالة
     if "chat_history" not in st.session_state:
         st.session_state.chat_history = []
@@ -578,16 +523,13 @@ if selected_key == "ai_copilot":
         st.session_state.ai_supervisors = []
     if "ai_selected_sups" not in st.session_state:
         st.session_state.ai_selected_sups = []
-
     # ─── قسم رفع الملفات ───
     st.markdown("#### 📂 رفع الملفات")
     col_p, col_pay = st.columns(2)
-
     with col_p:
         port_file = st.file_uploader("ملف المحفظة (.xlsx) *", type=["xlsx", "xls"], key="ai_port_file")
     with col_pay:
         pay_file = st.file_uploader("ملف السدادات (.xlsx) - اختياري", type=["xlsx", "xls"], key="ai_pay_file")
-
     if port_file:
         with tempfile.NamedTemporaryFile(delete=False, suffix=".xlsx") as tmp:
             tmp.write(port_file.getbuffer())
@@ -609,7 +551,6 @@ if selected_key == "ai_copilot":
                 os.unlink(tmp_path)
             except:
                 pass
-
     if pay_file:
         with tempfile.NamedTemporaryFile(delete=False, suffix=".xlsx") as tmp:
             tmp.write(pay_file.getbuffer())
@@ -625,13 +566,11 @@ if selected_key == "ai_copilot":
                 os.unlink(tmp_path)
             except:
                 pass
-
     # ─── فلتر المشرفين ───
     if st.session_state.ai_portfolio_df is not None:
         st.markdown("<div class='purple-divider'></div>", unsafe_allow_html=True)
         st.markdown("#### 👥 تحديد نطاق العمل (المشرفين)")
         st.caption("اختر المشرفين الذين تريد أن يعمل الـ AI على بياناتهم. اتركها فارغة للعمل على الكل.")
-
         sups_all = st.session_state.ai_supervisors
         if sups_all:
             selected_sups = st.multiselect(
@@ -648,11 +587,9 @@ if selected_key == "ai_copilot":
                 st.info("🌐 العمل على المحفظة الكاملة (جميع المشرفين)")
         else:
             st.warning("⚠️ لم يتم اكتشاف عمود المشرفين تلقائياً. سيعمل الـ AI على كامل المحفظة.")
-
         # ─── واجهة الدردشة ───
         st.markdown("<div class='purple-divider'></div>", unsafe_allow_html=True)
         st.markdown("#### 🧠 تحدث مع AI Operations Copilot")
-
         # عرض رسائل المحادثة
         chat_container = st.container()
         with chat_container:
@@ -668,7 +605,6 @@ if selected_key == "ai_copilot":
                     • <em>كم إجمالي متبقي السداد؟</em>
                 </div>
                 """, unsafe_allow_html=True)
-
             for msg in st.session_state.chat_history:
                 if msg["role"] == "user":
                     st.markdown(f"""
@@ -682,7 +618,6 @@ if selected_key == "ai_copilot":
                         <strong>🤖 AI Copilot:</strong><br>{msg['content']}
                     </div>
                     """, unsafe_allow_html=True)
-
         # حقل الإدخال
         col_q, col_send = st.columns([5, 1])
         with col_q:
@@ -694,24 +629,20 @@ if selected_key == "ai_copilot":
             )
         with col_send:
             send_btn = st.button("✉️ إرسال", use_container_width=True)
-
         col_clr, _ = st.columns([1, 4])
         with col_clr:
             if st.button("🗑️ مسح المحادثة", use_container_width=True):
                 st.session_state.chat_history = []
                 st.rerun()
-
         if (send_btn or user_question) and user_question and user_question.strip():
             if send_btn or True:
                 # حفظ سؤال المستخدم
                 st.session_state.chat_history.append({"role": "user", "content": user_question})
-
                 # تشغيل الـ AI
                 with st.spinner("🤖 AI يحلل بياناتك..."):
                     try:
                         from core.knowledge_base import CopilotKnowledgeBase
                         from core.ai_copilot import AIOperationsCopilot
-
                         kb = CopilotKnowledgeBase()
                         copilot = AIOperationsCopilot(
                             portfolio_df=st.session_state.ai_portfolio_df,
@@ -724,10 +655,8 @@ if selected_key == "ai_copilot":
                         )
                     except Exception as e:
                         answer = f"⚠️ حدث خطأ أثناء تحليل البيانات: {e}"
-
                 st.session_state.chat_history.append({"role": "ai", "content": answer})
                 st.rerun()
-
     else:
         st.markdown("""
         <div style="
@@ -747,8 +676,6 @@ if selected_key == "ai_copilot":
             </div>
         </div>
         """, unsafe_allow_html=True)
-
-
 # ════════════════════════════════════════════════════════════════════
 #  واجهة باقي الموديولات (الموديولات الأصلية كما هي)
 # ════════════════════════════════════════════════════════════════════
@@ -756,7 +683,6 @@ else:
     # ─── قسم رفع الملفات ───
     st.markdown("#### 📂 رفع الملفات المطلوبة")
     uploaded_files = {}
-
     cols_upload = st.columns(len(module_info["files"]))
     for i, fspec in enumerate(module_info["files"]):
         with cols_upload[i]:
@@ -765,7 +691,6 @@ else:
                 type=["xlsx", "xls"],
                 key=f"{selected_key}_{fspec['key']}"
             )
-
     # ─── معطيات السحب والتدوير ───
     rotation_params = {}
     if selected_key == "rotation" and uploaded_files.get("portfolio"):
@@ -806,7 +731,6 @@ else:
                 os.unlink(tmp_scan_path)
             except:
                 pass
-
     # ─── واجهة سحب وتوزيع المحافظ ───
     balancing_params = {}
     source_ports: list = []
@@ -866,7 +790,6 @@ else:
                 os.unlink(tmp_scan_path)
             except:
                 pass
-
     # ─── واجهة مركز تقارير العمليات ───
     ops_params = {}
     if selected_key == "operations" and uploaded_files.get("portfolio"):
@@ -880,7 +803,6 @@ else:
                 st.markdown("---")
                 st.markdown("### 🏢 Reports Center - مركز التقارير")
                 st.info("اختر نوع التقرير والفترة الزمنية والخيارات المطلوب استخراجها:")
-
                 col_mode, _ = st.columns([3, 1])
                 with col_mode:
                     rep_type = st.radio(
@@ -889,7 +811,6 @@ else:
                         index=0,
                         horizontal=True
                     )
-
                 st.markdown("##### ⏱️ إعدادات الفترة الزمنية")
                 if "Daily" in rep_type:
                     ops_params["report_mode"] = "daily"
@@ -916,7 +837,6 @@ else:
                                              index=list(range(2023, 2031)).index(curr_y) if curr_y in range(2023, 2031) else 0)
                     ops_params["month"] = m_val
                     ops_params["year"] = y_val
-
                 st.markdown("##### 🔍 فلاتر مخصصة (اختياري)")
                 f_col1, f_col2, f_col3 = st.columns(3)
                 with f_col1:
@@ -927,7 +847,6 @@ else:
                     mstat_sel = st.multiselect("الحالة الرئيسية:", filter_options.get("main_statuses", []))
                 with f_col3:
                     sstat_sel = st.multiselect("الحالة الفرعية:", filter_options.get("sub_statuses", []))
-
                 ops_params["supervisors"] = sups_sel if sups_sel else None
                 ops_params["collectors"] = cols_sel if cols_sel else None
                 ops_params["portfolios"] = ports_sel if ports_sel else None
@@ -938,7 +857,6 @@ else:
                 os.unlink(tmp_scan_path)
             except:
                 pass
-
     # ─── التحقق من الجاهزية ───
     ready_to_run = True
     for fspec in module_info["files"]:
@@ -950,10 +868,8 @@ else:
         ready_to_run = False
     if selected_key == "operations" and not ops_params:
         ready_to_run = False
-
     # ─── زر التشغيل ───
     st.markdown("<div class='purple-divider'></div>", unsafe_allow_html=True)
-
     if st.button("🚀 تشغيل التحليل والمعالجة", disabled=not ready_to_run, use_container_width=True):
         temp_files = []
         path_map = {}
@@ -972,16 +888,13 @@ else:
                                 path_map[PROMISE_PAY] = tmp_path
                             elif key == "payments":
                                 path_map["payments"] = tmp_path
-
                 dfs, results = load_files(path_map)
                 for k, vr in results.items():
                     if not vr.is_valid:
                         st.error(f"❌ الملف {k} غير صالح: {vr.summary()}")
                         st.stop()
-
                 portfolio = dfs.get(MAIN_PORTFOLIO)
                 promise = dfs.get(PROMISE_PAY, pl.DataFrame())
-
             with st.spinner("⚙️ جاري معالجة البيانات وتطبيق القواعد الحسابية..."):
                 task_id = module_info["id"]
                 stats = {}
@@ -989,19 +902,16 @@ else:
                 os.close(out_fd)
                 temp_files.append(out_path)
                 writer = ExcelReportWriter(out_path)
-
                 if task_id == 1:
                     from modules.module1_errors import SystemErrorsModule
                     r = SystemErrorsModule().run(portfolio, promise)
                     stats.update(r["stats"])
                     writer.write_errors(r["data"])
-
                 elif task_id == 2:
                     from modules.module2_contact import ContactStatusModule
                     r = ContactStatusModule().run(portfolio)
                     stats.update(r["stats"])
                     writer.write_contact(r["data"], r["pivot_supervisor"], r["pivot_collector"], r["pivot_status"])
-
                 elif task_id == 3:
                     from modules.module3_neglect import NeglectModule
                     r = NeglectModule().run(portfolio)
@@ -1009,13 +919,11 @@ else:
                     writer.write_neglect(r["data"], r["full_analysis"], r["pivot_summary"],
                                          r["pivot_supervisor"], r["pivot_collector"], r["pivot_status"],
                                          r["pivot_branch"], r["pivot_portfolio"], r["pivot_days"])
-
                 elif task_id == 7:
                     from modules.module7_targets import TargetCustomersModule
                     r = TargetCustomersModule().run(portfolio, promise, pl.DataFrame())
                     stats.update(r["stats"])
                     writer.write_targets(r["data"], r["pivot_supervisor"])
-
                 elif task_id == 6:
                     sup = rotation_params["supervisor"]
                     col = rotation_params["collector"]
@@ -1024,7 +932,6 @@ else:
                     stats.update(r["stats"])
                     writer.write_rotation(r["data"], r["execution_report"],
                                           r["distribution_summary"], r["withdrawal_summary"])
-
                 elif task_id == 8:
                     from modules.module8_balancing import PortfolioBalancingModule
                     tgt = balancing_params.get("target") or None
@@ -1038,7 +945,6 @@ else:
                     writer.write_balancing(r["data"], r["summary_pivot"],
                                            r.get("planning_sheet"), r.get("source_summary"),
                                            r.get("final_result_sheet"))
-
                 elif task_id == 9:
                     from modules.module9_operations_report import OperationsReportModule
                     pmt_df = dfs.get("payments")
@@ -1064,14 +970,11 @@ else:
                         r.get("top10_supervisors"), r.get("top10_collectors"),
                         r.get("top10_portfolios"), r["stats"],
                     )
-
                 writer.write_dashboard(stats, task_id)
                 writer.write_summary(stats)
                 writer.save()
-
             st.balloons()
             st.success("✨ اكتملت معالجة البيانات بنجاح وتم إنشاء التقرير المنسق!")
-
             # ─── عرض الإحصائيات ───
             st.markdown("#### 📊 ملخص نتائج التقرير")
             stats_cols = st.columns(min(len(stats), 4))
@@ -1079,22 +982,23 @@ else:
                 col_idx = j % len(stats_cols)
                 with stats_cols[col_idx]:
                     st.metric(label=k, value=str(v))
-
             # جدول توزيع المحصلين
             if task_id == 8 and 'r' in locals() and "summary_pivot" in r:
                 st.markdown("---")
                 st.markdown("#### 📋 جدول ملخص التوزيع النهائي للمحصلين")
-                show_df = r["summary_pivot"].select(["المحصل الجديد", "اليوزر", "عدد العملاء", "إجمالي متبقي السداد"])
-                show_df = show_df.filter(~pl.col("المحصل الجديد").str.contains("📉|📈"))
-                st.dataframe(show_df.to_pandas(), use_container_width=True, hide_index=True)
-
+                summary_df = r["summary_pivot"]
+                target_cols = ["المحصل", "المحصل الجديد", "اليوزر", "عدد العملاء بعد", "عدد العملاء", "إجمالي متبقي السداد"]
+                cols_to_show = [c for c in target_cols if c in summary_df.columns]
+                if cols_to_show:
+                    show_df = summary_df.select(cols_to_show)
+                    first_col = cols_to_show[0]
+                    show_df = show_df.filter(~pl.col(first_col).cast(pl.String).str.contains("📉|📈"))
+                    st.dataframe(show_df.to_pandas(), use_container_width=True, hide_index=True)
             # ─── زر التحميل ───
             with open(out_path, "rb") as f_out:
                 excel_bytes = f_out.read()
-
             ts_str = datetime.now().strftime("%Y%m%d_%H%M%S")
             download_name = f"مهاره_{selected_key}_{ts_str}.xlsx"
-
             st.markdown("<div class='purple-divider'></div>", unsafe_allow_html=True)
             st.download_button(
                 label="📥 تحميل التقرير النهائي (Excel Styled)",
@@ -1103,11 +1007,9 @@ else:
                 mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                 use_container_width=True
             )
-
         except Exception as e:
             st.exception(e)
             st.error(f"❌ حدث خطأ أثناء تشغيل النظام: {e}")
-
         finally:
             for p in temp_files:
                 try:
