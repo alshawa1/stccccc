@@ -1,5 +1,5 @@
 import sys
-import o
+import os
 import tempfile
 from datetime import datetime, timedelta
 import polars as pl
